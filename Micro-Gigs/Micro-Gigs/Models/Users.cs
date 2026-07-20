@@ -26,7 +26,9 @@ namespace Micro_Gigs.Models
         [Required]
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
-        // Navigation Properties
+
+
+        // Navigation Properties------------------------------------------------------
 
         // User as Client
         public List<Gigs> PostedGigs { get; set; } = new List<Gigs>();

@@ -8,16 +8,18 @@ namespace Micro_Gigs.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int AssignmentId { get; set; }
+        public int AssignmentId { get; set; } // system generated — Primary Key
 
         [ForeignKey(nameof(Gigs))]
-        public int GidId { get; set; }
+        public int GigId { get; set; }
 
 
 
         [ForeignKey(nameof(Users))]
         [Required]
         public int freelancerId { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
         public decimal AgreedPrice { get; set; }
 
         public DateTime AssignedDate { get; set; }

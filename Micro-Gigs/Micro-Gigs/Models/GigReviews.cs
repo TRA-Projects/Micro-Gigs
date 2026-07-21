@@ -8,19 +8,30 @@ namespace Micro_Gigs.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // قاعدة البيانات تولد المعرف
-        public Guid ReviewId { get; set; } = Guid.NewGuid();   // system generated — Primary Key
+        public int ReviewId { get; set; }   // system generated — Primary Key
 
         [Required]
-        public Guid AssignmentId { get; set; }                 // system generated — linked to GigAssignments (Foreign Key)
+        public int AssignmentId { get; set; }                 // system generated — linked to GigAssignments (Foreign Key)
 
         [Required]
-        public Guid ReviewerId { get; set; }                   // system generated — set from authenticated user (Foreign Key)
+        public int ReviewerId { get; set; }                   // system generated — set from authenticated user (Foreign Key)
 
         [Required]
         [Range(1, 5)]
         public int Rating { get; set; }                        // user input — numeric value (1 to 5)
 
         public string? Comment { get; set; }                   // user input — optional text (NVARCHAR(MAX))
+
+        //------------------------------------------------------------------------------------------------------------------------------//
+        // Navigation properties (العلاقات)
+
+        // Navigation properties (Relationships)
+
+        [ForeignKey("AssignmentId")]
+        public virtual GigAssignments Assignment { get; set; }
+
+        [ForeignKey("ReviewerId")]
+        public virtual Users Reviewer { get; set; }
     }
 }
 

@@ -21,6 +21,6 @@ namespace Micro_Gigs.DTOs
 
         //public string FileUrl { get; set; }      // system generated — the link to the file
 
-        //public Guid User ID { get; set; }     // system generated — ID of the user who performed the upload
+        //public Guid UserID { get; set; }     // system generated — ID of the user who performed the upload
     }
 }

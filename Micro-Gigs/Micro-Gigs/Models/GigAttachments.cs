@@ -23,10 +23,12 @@ namespace Micro_Gigs.Models
         //------------------------------------------------------------------------------------------------------------------------------//
         // Navigation properties (Relationships)
 
+        // Navigation properties (Relationships)
+
         [ForeignKey("GigId")]
-        public Gigs Gig { get; set; }  // Reference to the specific gig
+        public virtual Gigs Gig { get; set; }  // Reference to the specific gig
 
         [ForeignKey("UserID")]
-        public Users Uploader { get; set; }  // Reference to the user who uploaded the file
+        public virtual Users Uploader { get; set; }  // Reference to the user who uploaded the file
     }
 }

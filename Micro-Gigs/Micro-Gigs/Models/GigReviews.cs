@@ -25,13 +25,13 @@ namespace Micro_Gigs.Models
         //------------------------------------------------------------------------------------------------------------------------------//
         // Navigation properties (العلاقات)
 
+        // Navigation properties (Relationships)
+
         [ForeignKey("AssignmentId")]
-        //  اسم الكلاس المرتبط
-        public  GigAssignments Assignment { get; set; }
+        public virtual GigAssignments Assignment { get; set; }
 
         [ForeignKey("ReviewerId")]
-        //  اسم كلاس المستخدم 
-        public  Users Reviewer { get; set; }
+        public virtual Users Reviewer { get; set; }
     }
 }
 

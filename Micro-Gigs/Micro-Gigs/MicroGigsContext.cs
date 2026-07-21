@@ -17,8 +17,7 @@ namespace Micro_Gigs
         {
         }
 
-        public DbSet<GigAttachments> GigAttachments { get; set; }
-        public DbSet<GigReviews> GigReviews { get; set; }
+        
 
 
     }

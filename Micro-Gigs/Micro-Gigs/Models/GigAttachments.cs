@@ -18,6 +18,6 @@ namespace Micro_Gigs.Models
         public string FileUrl { get; set; }                 // system generated — path or URL to the file
 
         [Required]
-        public Guid UserID { get; set; }                    // system generated — User ID of the uploader (Foreign Key)
+        public int UserID { get; set; }                    // system generated — User ID of the uploader (Foreign Key)
     }
 }

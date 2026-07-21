@@ -19,7 +19,7 @@ namespace Micro_Gigs.Models
         public DateTime AssignedDate { get; set; }
 
         public DateTime? CompletionDate { get; set; }
-
+        //
         [Required]
         [MaxLength(20)]
         public  string Status { get; set; }//InProgress, Submitted, Approved, Rejected, Completed

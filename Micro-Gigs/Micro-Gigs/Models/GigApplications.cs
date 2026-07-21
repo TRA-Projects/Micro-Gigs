@@ -20,7 +20,8 @@ namespace Micro_Gigs.Models
         [StringLength(50)]
         public string Status { get; set; }
 
-        // خصائص التنقل (Navigation Properties) لربط العلاقات
+//_____________
+
         [ForeignKey("GigId")]
         public virtual Gigs Gig { get; set; }
 

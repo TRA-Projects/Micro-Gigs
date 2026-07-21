@@ -7,6 +7,8 @@ namespace Micro_Gigs.Models
     public class GigApplications
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+
         public Guid ApplicationId { get; set; }
 
         [Required]

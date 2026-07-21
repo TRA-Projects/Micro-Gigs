@@ -10,8 +10,12 @@ namespace Micro_Gigs.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int AssignmentId { get; set; }
 
-    
-        
+        [ForeignKey(nameof(Gigs))]
+        public int GidId { get; set; }
+
+
+
+        [ForeignKey(nameof(Users))]
         [Required]
         public int freelancerId { get; set; }
         public decimal AgreedPrice { get; set; }

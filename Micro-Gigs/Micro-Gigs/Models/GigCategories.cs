@@ -15,5 +15,9 @@ namespace Micro_Gigs.Models
 
         [MaxLength(500)]
         public string Description { get; set; }
+
+        public List<Gigs> Gigs { get; set; }  // Navigation property to Gigs
+
+
     }
 }

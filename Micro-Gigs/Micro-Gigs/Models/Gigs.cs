@@ -28,5 +28,21 @@ namespace Micro_Gigs.Models
 
         public DateTime PostedDate { get; set; }
 
+        [Required]
+        public int ClientId { get; set; } // Foreign Key to Users table
+
+        [ForeignKey("ClientId")]
+        public virtual Users Client { get; set; }//  // Navigation Properties
+
+        [Required]
+        public int GigCategoryId { get; set; } // Foreign Key to GigCategories table
+
+        [ForeignKey("GigCategoryId")]
+        public virtual GigCategories GigCategory { get; set; } // Navigation Property
+
+        public virtual GigAssignments GigAssignment { get; set; } // Navigation Property
+        public virtual List<GigApplications> GigApplications { get; set; } // Navigation Property
+        public virtual List<GigAttachments> GigAttachments { get; set; } // Navigation Property
+
     }
 }

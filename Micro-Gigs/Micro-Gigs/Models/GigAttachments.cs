@@ -18,17 +18,6 @@ namespace Micro_Gigs.Models
         public string FileUrl { get; set; }                 // system generated — path or URL to the file
 
         [Required]
-        public int UserID { get; set; }                    // system generated — User ID of the uploader (Foreign Key)
-
-        //------------------------------------------------------------------------------------------------------------------------------//
-        // Navigation properties (Relationships)
-
-        // Navigation properties (Relationships)
-
-        [ForeignKey("GigId")]
-        public virtual Gigs Gig { get; set; }  // Reference to the specific gig
-
-        [ForeignKey("UserID")]
-        public virtual Users Uploader { get; set; }  // Reference to the user who uploaded the file
+        public Guid UserID { get; set; }                    // system generated — User ID of the uploader (Foreign Key)
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Micro_Gigs.Models
 {
@@ -6,7 +8,7 @@ namespace Micro_Gigs.Models
     {
         [Key]
         public Guid ApplicationId { get; set; }
-        //
+
         [Required]
         public Guid GigId { get; set; }
 
@@ -14,17 +16,22 @@ namespace Micro_Gigs.Models
         public Guid FreelancerId { get; set; }
 
         public string ProposalText { get; set; }
-        //
+
+        // أضفنا الحقلين المفقودين هنا ليتوافقا مع الخدمة وقاعدة البيانات
+        [Column(TypeName = "decimal(18,2)]")]
+        public decimal ProposedPrice { get; set; }
+
+        public DateTime ApplicationDate { get; set; }
+
         [Required]
         [StringLength(50)]
         public string Status { get; set; }
 
-        // علاقات التنقل (Navigation Properties) الاختيارية
-        //[ForeignKey("GigId")]
-        //public virtual Gig Gig { get; set; }
+        // خصائص التنقل (Navigation Properties)
+        [ForeignKey("GigId")]
+        public virtual Gigs Gig { get; set; }
 
-        //[ForeignKey("FreelancerId")]
-        //public virtual User Freelancer { get; set; }
-
+        [ForeignKey("FreelancerId")]
+        public virtual Users Freelancer { get; set; }
     }
 }

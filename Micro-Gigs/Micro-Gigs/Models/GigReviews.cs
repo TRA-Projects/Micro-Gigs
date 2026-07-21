@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Micro_Gigs.Models
 {
     [Table("GigReviews")]
-    public class GigReview
+    public class GigReviews
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // قاعدة البيانات تولد المعرف

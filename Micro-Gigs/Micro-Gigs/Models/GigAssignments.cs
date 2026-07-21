@@ -18,6 +18,7 @@ namespace Micro_Gigs.Models
         [ForeignKey(nameof(Users))]
         [Required]
         public int freelancerId { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
         public decimal AgreedPrice { get; set; }
 
         public DateTime AssignedDate { get; set; }

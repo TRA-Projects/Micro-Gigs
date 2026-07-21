@@ -8,7 +8,7 @@ namespace Micro_Gigs.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid GigId { get; set; }
+        public int GigId { get; set; }
 
         [Required]
         [MaxLength(200)]

@@ -9,17 +9,17 @@ namespace Micro_Gigs.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 
-        public Guid ApplicationId { get; set; }
+        public int ApplicationId { get; set; }
 
         [Required]
-        public Guid GigId { get; set; }
+        public int GigId { get; set; }
 
         [Required]
-        public Guid FreelancerId { get; set; }
+        public int FreelancerId { get; set; }
 
         public string ProposalText { get; set; }
 
-        // أضفنا الحقلين المفقودين هنا ليتوافقا مع الخدمة وقاعدة البيانات
+
         [Column(TypeName = "decimal(18,2)]")]
         public decimal ProposedPrice { get; set; }
 

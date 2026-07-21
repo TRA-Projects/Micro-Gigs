@@ -5,7 +5,7 @@ namespace Micro_Gigs.Models
 {
     
     [Table("GigAttachments")]
-    public class GigAttachment
+    public class GigAttachments
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -24,6 +24,7 @@ namespace Micro_Gigs.Models
         [ForeignKey("GigId")]
         public virtual Gigs Gig { get; set; }
 
+        //
         [ForeignKey("FreelancerId")]
         public virtual Users Freelancer { get; set; }
 

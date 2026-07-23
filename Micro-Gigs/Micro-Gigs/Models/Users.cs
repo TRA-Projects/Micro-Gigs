@@ -8,7 +8,7 @@ namespace Micro_Gigs.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid UserId { get; set; }
+        public int UserId { get; set; }
 
         [Required]
         [MaxLength(100)]
@@ -17,17 +17,30 @@ namespace Micro_Gigs.Models
         [Required]
         [EmailAddress]
         [MaxLength(100)]
-        public string Email { get; set; }= string.Empty;
+        public string Email { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(20)]
-        public string UserType { get; set; }= string.Empty;
+        public string UserType { get; set; } = string.Empty;
 
         [Required]
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
-        // Navigation Properties
 
 
+        // Navigation Properties------------------------------------------------------
+
+        // User as Client
+        public List<Gigs> PostedGigs { get; set; } = new List<Gigs>();
+
+        // User as Freelancer
+        public List<GigApplications> GigApplications { get; set; } = new List<GigApplications>();
+        public List<GigAssignments> AssignedGigs { get; set; } = new List<GigAssignments>();
+
+        // Reviews written by this user
+        public List<GigReviews> ReviewsGiven { get; set; } = new List<GigReviews>();
+
+        // Uploaded attachments
+        public List<GigAttachments> UploadedAttachments { get; set; } = new List<GigAttachments>();
     }
 }

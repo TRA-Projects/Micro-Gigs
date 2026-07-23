@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Micro_Gigs.DTOs
@@ -16,9 +16,9 @@ namespace Micro_Gigs.DTOs
     // البيانات التي تظهر عند استعراض المرفق
     public class GigAttachmentsOutputDTO
     {
-        public Guid AttachmentId { get; set; }   // system generated — Primary Key
-        public Guid GigId { get; set; }          // system generated
+        public int AttachmentId { get; set; }   // system generated — Primary Key
+        public int GigId { get; set; }          // system generated
         public string FileUrl { get; set; }      // system generated
-        public Guid UploadedBy { get; set; }     // system generated — User ID from token
+        public int UploadedBy { get; set; }     // system generated — User ID from token
     }
 }

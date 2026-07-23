@@ -1,5 +1,4 @@
-﻿using System;
-
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Micro_Gigs.DTOs
@@ -8,7 +7,7 @@ namespace Micro_Gigs.DTOs
     public class GigReviewsInputDTO
     {
         [Required]
-        public Guid AssignmentId { get; set; }   // system generated/linked — linked to Assignment
+        public int AssignmentId { get; set; }   // system generated/linked — linked to Assignment
 
         [Required]
         [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5")]
@@ -20,9 +19,9 @@ namespace Micro_Gigs.DTOs
     // البيانات التي تظهر عند عرض التقييم
     public class GigReviewsOutputDTO
     {
-        public Guid ReviewId { get; set; }       // system generated — Primary Key
-        public Guid AssignmentId { get; set; }   // system generated
-        public Guid ReviewerId { get; set; }     // system generated — Client ID from token
+        public int ReviewId { get; set; }       // system generated — Primary Key
+        public int AssignmentId { get; set; }   // system generated
+        public int ReviewerId { get; set; }     // system generated — Client ID from token
         public int Rating { get; set; }          // user input
         public string? Comment { get; set; }     // user input
     }

@@ -9,7 +9,7 @@ namespace Micro_Gigs.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public  int AttachmentId { get; set; } // system generated — Primary Key
+        public  int AttachmentId { get; set; } // System generated — Primary Key
 
         [Required]
         public int GigId { get; set; }                       // system generated — linked to Gigs (Foreign Key)

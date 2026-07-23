@@ -27,20 +27,32 @@ namespace Micro_Gigs.Models
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
 
-
+        [Required]
+        public string PasswordHash{ get; set; } = string.Empty;
         // Navigation Properties------------------------------------------------------
 
         // User as Client
-        public List<Gigs> PostedGigs { get; set; } = new List<Gigs>();
+
+        [InverseProperty("Client")]
+        public virtual List<Gigs> PostedGigs { get; set; } = new List<Gigs>();
 
         // User as Freelancer
-        public List<GigApplications> GigApplications { get; set; } = new List<GigApplications>();
-        public List<GigAssignments> AssignedGigs { get; set; } = new List<GigAssignments>();
+
+        [InverseProperty("Freelancer")]
+
+        public virtual List<GigApplications> GigApplications { get; set; } = new List<GigApplications>();
+
+        [InverseProperty("Freelancer")]
+        public virtual List<GigAssignments> FreelancerAssignments { get; set; } = new List<GigAssignments>();
 
         // Reviews written by this user
-        public List<GigReviews> ReviewsGiven { get; set; } = new List<GigReviews>();
+        [InverseProperty("Reviewer")]
+
+        public virtual List<GigReviews> ReviewsGiven { get; set; } = new List<GigReviews>();
 
         // Uploaded attachments
-        public List<GigAttachments> UploadedAttachments { get; set; } = new List<GigAttachments>();
+        [InverseProperty("UploadedBy")]
+
+        public virtual List<GigAttachments> Uploads { get; set; } = new List<GigAttachments>();
     }
 }

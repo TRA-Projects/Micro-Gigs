@@ -1,26 +1,24 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Micro_Gigs.DTOs
 {
-    // المدخلات: البيانات التي يرسلها المستخدم عند رفع مرفق جديد
-    public class GigAttachmentsInputDTOs
+    // البيانات التي يتم إرسالها عند رفع مرفق جديد
+    public class GigAttachmentsInputDTO
     {
-        //[Required]
-        //public Guid GigId { get; set; }          // system generated — linked to the specific Gig
+        [Required]
+        public Guid GigId { get; set; }          // system generated/linked — linked to Gigs
 
-        //[Required]
-        //public string FileUrl { get; set; }      // system generated — the path/URL after uploading the file
+        [Required]
+        public string FileUrl { get; set; }      // system generated — path or URL after upload
     }
 
-    // المخرجات: البيانات التي تظهر عند استعراض المرفقات
-    public class GigAttachmentsOutputDTOs
+    // البيانات التي تظهر عند استعراض المرفق
+    public class GigAttachmentsOutputDTO
     {
-        //public Guid AttachmentId { get; set; }   // system generated — Primary Key
-
-        //public Guid GigId { get; set; }          // system generated
-
-        //public string FileUrl { get; set; }      // system generated — the link to the file
-
-        //public Guid UserID { get; set; }     // system generated — ID of the user who performed the upload
+        public Guid AttachmentId { get; set; }   // system generated — Primary Key
+        public Guid GigId { get; set; }          // system generated
+        public string FileUrl { get; set; }      // system generated
+        public Guid UploadedBy { get; set; }     // system generated — User ID from token
     }
 }

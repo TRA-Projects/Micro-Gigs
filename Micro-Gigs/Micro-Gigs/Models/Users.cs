@@ -26,7 +26,7 @@ namespace Micro_Gigs.Models
         [Required]
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
-
+        //
         [Required]
         public string PasswordHash{ get; set; } = string.Empty;
         // Navigation Properties------------------------------------------------------

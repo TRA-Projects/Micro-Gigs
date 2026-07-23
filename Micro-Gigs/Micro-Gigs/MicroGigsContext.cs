@@ -13,12 +13,11 @@ namespace Micro_Gigs
         public DbSet<GigReviews> Reviews { get; set; }
         public DbSet<GigAttachments> Attachments { get; set; }
 
+        // constructor يستقبل الاعدادات من ملف البروجرام 
+        // Configure the database connection string in the appsettings.json file and use it here
         public MicroGigsContext(DbContextOptions<MicroGigsContext> options) : base(options)
         {
         }
-
-        
-
 
     }
   

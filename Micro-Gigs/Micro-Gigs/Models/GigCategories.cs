@@ -10,13 +10,14 @@ namespace Micro_Gigs.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int GigCategoryId { get; set; }
 
-        [Required] 
-        public string CategoryName { get; set; }
+        [Required]
+        [StringLength(100)]
+        public string CategoryName { get; set; } = string.Empty;
 
         [MaxLength(500)]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
-        public List<Gigs> Gigs { get; set; }  // Navigation property to Gigs
+        public List<Gigs> Gigs { get; set; } = new List<Gigs>();  // Navigation property to Gigs
 
 
     }

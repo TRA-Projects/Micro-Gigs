@@ -1,23 +1,21 @@
 ﻿using Micro_Gigs.Models;
 
-namespace Micro_Gigs.Repositories
+namespace Micro_Gigs.Repositories.Interfaces
 {
-    //// هذا الـ Interface يحدد العمليات الخاصة بالتقييمات Reviews
-    //// أي Repository خاص بالتقييمات يجب أن يطبق هذه العمليات
-    //public interface IGigReviewsRepo
-    //{
-    //    // إضافة تقييم جديد إلى قاعدة البيانات
-    //    Task AddAsync(GigReviews review);
+    public interface IGigReviewsRepository
+    {
+        Task<IEnumerable<GigReviews>> GetAllAsync();
 
-    //    // جلب جميع التقييمات المرتبطة بتكليف معين Assignment
-    //    Task<List<GigReviews>> GetByAssignmentIdAsync(Guid assignmentId);
+        Task<GigReviews?> GetByIdAsync(int reviewId);
 
-    //    // البحث عن تقييم معين باستخدام الـ ID
-    //    // إذا لم يتم العثور على التقييم يرجع null
-    //    Task<GigReviews?> GetByIdAsync(Guid id);
+        Task<IEnumerable<GigReviews>> GetByAssignmentIdAsync(int assignmentId);
 
-    //    // حفظ جميع التغييرات التي تمت على قاعدة البيانات
-    //    // يرجع true إذا تم حفظ تغيير واحد أو أكثر
-    //    Task<bool> SaveChangesAsync();
-    //}
+        Task<IEnumerable<GigReviews>> GetByReviewerIdAsync(int reviewerId);
+
+        Task<GigReviews> AddAsync(GigReviews review);
+
+        Task<GigReviews> UpdateAsync(GigReviews review);
+
+        Task<bool> DeleteAsync(int reviewId);
+    }
 }

@@ -43,6 +43,6 @@ namespace Micro_Gigs.Models
         public int ClientId { get; set; }
 
         [ForeignKey(nameof(ClientId))]
-        public virtual Users Reviewer { get; set; } = null!;
+        public virtual Users Client { get; set; } = null!;
     }
 }

@@ -52,7 +52,7 @@ namespace Micro_Gigs.Repositories.Implementations
         public async Task<IEnumerable<GigAttachments>> GetByUserIdAsync(int userId)
         {
             return await _context.Attachments
-                .Where(a => a.Uploader == userId) 
+                .Where(a => a.UploadedBy == userId) 
                 .AsNoTracking()
                 .ToListAsync();
         }

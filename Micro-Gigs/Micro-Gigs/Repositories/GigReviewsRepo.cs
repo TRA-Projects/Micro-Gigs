@@ -35,7 +35,7 @@ namespace Micro_Gigs.Repositories.Implementations
             // تحويل النتائج إلى List بشكل غير متزامن
             return await _context.Reviews
                 .Include(r => r.Assignment)
-                .Include(r => r.Reviewer)
+                .Include(r => r.Client)
                 .ToListAsync();
         }
 
@@ -58,7 +58,7 @@ namespace Micro_Gigs.Repositories.Implementations
             // أو null إذا لم يتم العثور عليه
             return await _context.Reviews
                 .Include(r => r.Assignment)
-                .Include(r => r.Reviewer)
+                .Include(r => r.Client)
                 .FirstOrDefaultAsync(r => r.ReviewId == reviewId);
         }
 
@@ -71,7 +71,7 @@ namespace Micro_Gigs.Repositories.Implementations
             // البحث عن جميع Reviews
             // التي يكون AssignmentId فيها مساويًا للـ assignmentId المطلوب
             return await _context.Reviews
-                .Where(r => r.AssignmentId == assignmentId)
+                .Where(r => r.AssId == assignmentId)
                 .ToListAsync();
         }
 
@@ -84,7 +84,7 @@ namespace Micro_Gigs.Repositories.Implementations
             // البحث عن جميع Reviews
             // التي يكون ReviewerId فيها مساويًا للـ reviewerId المطلوب
             return await _context.Reviews
-                .Where(r => r.ReviewerId == reviewerId)
+                .Where(r => r.ClientId == reviewerId)
                 .ToListAsync();
         }
 

@@ -48,7 +48,7 @@ namespace Micro_Gigs.Models
         public virtual List<GigAssignments> FreelancerAssignments { get; set; } = new List<GigAssignments>();
 
         // Reviews written by this user
-        [InverseProperty("Reviewer")]
+        [InverseProperty("Client")]
 
         public virtual List<GigReviews> ReviewsGiven { get; set; } = new List<GigReviews>();
 

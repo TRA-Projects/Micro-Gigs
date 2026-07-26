@@ -22,11 +22,12 @@ namespace Micro_Gigs.Models
         public int FreelancerId { get; set; }
         // خصائص التنقل  التي تحل الخطأ تماماً(Navigation Properties)
         [ForeignKey("GigId")]
-        public virtual Gigs? Gig { get; set; }
+        public virtual Gigs? Gig { get; set; } = null;
 
         [ForeignKey("FreelancerId")]
-        public virtual Users? Freelancer { get; set; }
+        public virtual Users? Freelancer { get; set; } = null;
         public virtual GigReviews? Review { get; set; }
+    
     }
 
 }

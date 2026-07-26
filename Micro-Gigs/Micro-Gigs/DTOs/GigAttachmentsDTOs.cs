@@ -3,22 +3,71 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Micro_Gigs.DTOs
 {
+    // =========================================================
+    // GIG ATTACHMENTS INPUT DTO
     // البيانات التي يتم إرسالها عند رفع مرفق جديد
+    // =========================================================
+
     public class GigAttachmentsInputDTO
     {
-        [Required]
-        public Guid GigId { get; set; }          // system generated/linked — linked to Gigs
+        // =====================================================
+        // GIG ID
+        // رقم الـ Gig المرتبط بالملف
+        // يجب أن يكون نفس نوع GigId الموجود في Model
+        // =====================================================
 
         [Required]
-        public string FileUrl { get; set; }      // system generated — path or URL after upload
+        public int GigId { get; set; }
+
+
+        // =====================================================
+        // FILE URL
+        // مسار أو رابط الملف بعد رفعه
+        // =====================================================
+
+        [Required]
+        public string FileUrl { get; set; }
     }
 
+
+    // =========================================================
+    // GIG ATTACHMENTS OUTPUT DTO
     // البيانات التي تظهر عند استعراض المرفق
+    // =========================================================
+
     public class GigAttachmentsOutputDTO
     {
-        public int AttachmentId { get; set; }   // system generated — Primary Key
-        public int GigId { get; set; }          // system generated
-        public string FileUrl { get; set; }      // system generated
-        public int UploadedBy { get; set; }     // system generated — User ID from token
+        // =====================================================
+        // ATTACHMENT ID
+        // المفتاح الأساسي للمرفق
+        // يتم توليده تلقائياً من قاعدة البيانات
+        // =====================================================
+
+        public int AttachmentId { get; set; }
+
+
+        // =====================================================
+        // GIG ID
+        // رقم الـ Gig المرتبط بالمرفق
+        // =====================================================
+
+        public int GigId { get; set; }
+
+
+        // =====================================================
+        // FILE URL
+        // مسار أو رابط الملف
+        // =====================================================
+
+        public string FileUrl { get; set; }
+
+
+        // =====================================================
+        // UPLOADED BY
+        // رقم المستخدم الذي قام برفع الملف
+        // يتم أخذه من User Token
+        // =====================================================
+
+        public int UploadedBy { get; set; }
     }
 }

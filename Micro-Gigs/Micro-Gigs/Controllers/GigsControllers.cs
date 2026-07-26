@@ -7,6 +7,8 @@ using System.Security.Claims;
 
 namespace Micro_Gigs.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class GigsControllers : ControllerBase
     {
         private GigsServices gigsServices;

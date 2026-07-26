@@ -36,13 +36,13 @@ namespace Micro_Gigs.Models
         public int AssId { get; set; }
 
         [ForeignKey(nameof(AssId))]
-        public virtual GigAssignments? Assignment { get; set; }
+        public virtual GigAssignments GigAssignment { get; set; } = null;
 
         // 2. Client/User Relationship (تم التعديل إلى ClientId ليطابق ERD)
         [Required]
         public int ClientId { get; set; }
 
         [ForeignKey(nameof(ClientId))]
-        public virtual Users? Client { get; set; }
+        public virtual Users Reviewer { get; set; } = null!;
     }
 }

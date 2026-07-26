@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Micro_Gigs.Models
 {
-    // اسم الجدول في قاعدة البيانات مطابق تماماً للـ ERD
     [Table("GIG_ATTACHMENTS")]
     public class GigAttachments
     {
@@ -13,36 +12,36 @@ namespace Micro_Gigs.Models
         // =========================================================
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int AttachmentId { get; set; } // Primary Key (PK)
+        public int AttachmentId { get; set; }
 
         // =========================================================
-        // ATTRIBUTES (الخصائص العادية)
+        // FILE ATTRIBUTES
         // =========================================================
         [Required]
-        [StringLength(255)]
-        public string FileName { get; set; } = string.Empty; // FileName
+        [MaxLength(500)]
+        public string FileUrl { get; set; } = string.Empty;
 
-        [Required]
-        public string FileUrl { get; set; } = string.Empty; // FileUrl
+        [MaxLength(255)]
+        public string? FileName { get; set; }
 
-        public DateTime UploadDate { get; set; } = DateTime.UtcNow; // UploadDate
+        public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
 
         // =========================================================
-        // FOREIGN KEYS & NAVIGATION PROPERTIES (المفاتيح والعلاقات)
+        // FOREIGN KEYS & NAVIGATION PROPERTIES
         // =========================================================
 
-        // 1. Gig Relationship (GIGId - FK)
+        // 1. Gig Relationship
         [Required]
         public int GigId { get; set; }
 
-        [ForeignKey(nameof(GigId))]
-        public virtual Gigs? Gig { get; set; }
+        [ForeignKey("GigId")]
+        public virtual Gigs Gig { get; set; } = null!;
 
-        // 2. User Relationship (UploadedById - FK)
+        // 2. User Relationship
         [Required]
-        public int UploadedById { get; set; }
+        public int UploadedBy { get; set; }
 
-        [ForeignKey(nameof(UploadedById))]
-        public virtual Users? UploadedBy { get; set; }
+        [ForeignKey("UploadedBy")]
+        public virtual Users UploadedByUser { get; set; } = null!;
     }
 }

@@ -18,13 +18,13 @@ namespace Micro_Gigs.Models
         // FILE ATTRIBUTES
         // =========================================================
         [Required]
-        [StringLength(255)]
-        public string FileName { get; set; } = string.Empty;
-
-        [Required]
+        [MaxLength(500)]
         public string FileUrl { get; set; } = string.Empty;
 
-        public DateTime UploadDate { get; set; } = DateTime.UtcNow;
+        [MaxLength(255)]
+        public string? FileName { get; set; }
+
+        public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
 
         // =========================================================
         // FOREIGN KEYS & NAVIGATION PROPERTIES
@@ -34,14 +34,14 @@ namespace Micro_Gigs.Models
         [Required]
         public int GigId { get; set; }
 
-        [ForeignKey(nameof(GigId))]
-        public virtual Gigs? Gig { get; set; }
+        [ForeignKey("GigId")]
+        public virtual Gigs Gig { get; set; } = null!;
 
         // 2. User Relationship
         [Required]
-        public int Uploader { get; set; }
+        public int UploadedBy { get; set; }
 
-        [ForeignKey(nameof(Uploader))]
-        public virtual Users? UploadedByUser { get; set; }
+        [ForeignKey("UploadedBy")]
+        public virtual Users UploadedByUser { get; set; } = null!;
     }
 }

@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;       // لاستخدام ToListAsync و FirstOrDefaultAsync و Include
 using Micro_Gigs.Models;                   // للوصول إلى Model: GigReviews
-using Micro_Gigs.Repositories.Interfaces; // للوصول إلى Interface: IGigReviewsRepository
+using Micro_Gigs.Repositories; // للوصول إلى :Repository
 
 namespace Micro_Gigs.Repositories.Implementations
 {
     // Repository مسؤول عن التعامل مع بيانات GigReviews في قاعدة البيانات
-    // ويطبق Interface: IGigReviewsRepository
-    public class GigReviewsRepo : IGigReviewsRepository
+    // ويطبق Interface: Repository
+    public class GigReviewsRepo 
     {
         // متغير خاص للوصول إلى قاعدة البيانات
         private readonly MicroGigsContext _context;

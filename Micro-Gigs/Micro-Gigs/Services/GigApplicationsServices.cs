@@ -11,7 +11,11 @@ namespace Micro_Gigs.Services
     {
         IEnumerable<GigApplicationDto> GetAllApplications();
         GigApplicationDto? GetApplicationById(int id);
-        GigApplicationDto CreateApplication(CreateGigApplicationDto dto);
+
+        // تأكد أن نوع الإرجاع هنا هو int (أو GigApplicationDto حسب رغبتك، ولكن الأفضل int لإرجاع الـ ID عند الإنشاء كما هو معمول به في الـ Controllers المشابهة)
+        int CreateApplication(CreateGigApplicationDto dto);
+
+        bool UpdateApplicationStatus(int id, string status);
         bool DeleteApplication(int id);
     }
 
@@ -56,7 +60,8 @@ namespace Micro_Gigs.Services
             };
         }
 
-        public GigApplicationDto CreateApplication(CreateGigApplicationDto dto)
+        // تم تعديل نوع الإرجاع هنا إلى int ليتطابق مع الـ Interface ويُرجع الـ ID مباشرة
+        public int CreateApplication(CreateGigApplicationDto dto)
         {
             var application = new GigApplications
             {
@@ -70,16 +75,18 @@ namespace Micro_Gigs.Services
 
             _repo.Add(application);
 
-            return new GigApplicationDto
-            {
-                ApplicationId = application.ApplicationId,
-                GigId = application.GigId,
-                FreelancerId = application.FreelancerId,
-                ProposalText = application.ProposalText,
-                ProposedPrice = application.ProposedPrice,
-                ApplicationDate = application.ApplicationDate,
-                Status = application.Status
-            };
+            // إرجاع المعرف (ID) الخاص بالطلب الجديد
+            return application.ApplicationId;
+        }
+
+        public bool UpdateApplicationStatus(int id, string status)
+        {
+            var application = _repo.GetById(id);
+            if (application == null) return false;
+
+            application.Status = status;
+            _repo.Update(application);
+            return true;
         }
 
         public bool DeleteApplication(int id)

@@ -51,7 +51,7 @@ namespace Micro_Gigs.Services
         {
             //        // =====================================================
             //        // CREATE NEW ATTACHMENT
-            //        // إنشاء Object جديد من Model: GigAttachments
+            //        // إنشاء Object جديد من Model: GigAttachmentss
             //        // =====================================================
 
             var attachment = new GigAttachments

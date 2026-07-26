@@ -40,12 +40,12 @@ namespace Micro_Gigs.Services
 
 
             // Claims - User information stored inside JWT
-            Claim[] claims =
+            Claim[] claims = new[]
             {
-                new Claim("sub", user.UserName),
-                new Claim("userId", user.UserId.ToString()),
-                new Claim("email", user.Email),
-                new Claim("role", user.UserType) // Client or Freelancer
+               new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+               new Claim(ClaimTypes.Name, user.UserName),
+               new Claim(ClaimTypes.Email, user.Email),
+               new Claim(ClaimTypes.Role, user.UserType)
             };
 
 

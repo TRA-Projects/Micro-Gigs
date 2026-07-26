@@ -5,6 +5,14 @@ namespace Micro_Gigs
 {
     public class MicroGigsContext : DbContext
     {
+
+        // constructor يستقبل الاعدادات من ملف البروجرام 
+        // Configure the database connection string in the appsettings.json file and use it here
+        public MicroGigsContext(DbContextOptions<MicroGigsContext> options) : base(options)
+        {
+        }
+
+
         public DbSet<Users> Users { get; set; }
         public DbSet<Gigs> Gigs { get; set; }
         public DbSet<GigCategories> Categories { get; set; }
@@ -13,11 +21,7 @@ namespace Micro_Gigs
         public DbSet<GigReviews> Reviews { get; set; }
         public DbSet<GigAttachments> Attachments { get; set; }
 
-        // constructor يستقبل الاعدادات من ملف البروجرام 
-        // Configure the database connection string in the appsettings.json file and use it here
-        public MicroGigsContext(DbContextOptions<MicroGigsContext> options) : base(options)
-        {
-        }
+   
 
     }
   

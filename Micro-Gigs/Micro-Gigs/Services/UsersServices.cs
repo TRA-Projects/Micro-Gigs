@@ -205,6 +205,27 @@ namespace Micro_Gigs.Services
 
             return true;
         }
+
+        // =====================================================
+        // Get all users information
+        // =====================================================
+        public List<UsersInputDTOs.UsersResponseDto> GetAll()
+        {
+            // Retrieve all users from database
+            List<Users> users = usersRepo.GetAll();
+
+
+            // Convert Entities to Response DTOs
+            return users.Select(user => new UsersInputDTOs.UsersResponseDto
+            {
+                UserId = user.UserId,
+                UserName = user.UserName,
+                Email = user.Email,
+                UserType = user.UserType,
+                RegistrationDate = user.RegistrationDate
+
+            }).ToList();
+        }
     }
 
 }

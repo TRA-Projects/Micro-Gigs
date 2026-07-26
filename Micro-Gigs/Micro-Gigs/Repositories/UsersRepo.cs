@@ -26,7 +26,7 @@ namespace Micro_Gigs.Repositories
         // ============================
         // READ: Get User By ID
         // ============================
-        public Users? GetById(Guid id)
+        public Users? GetById(int id)
         {
             return _context.Users
                 .FirstOrDefault(u => u.UserId == id);

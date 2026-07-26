@@ -17,76 +17,77 @@ namespace Micro_Gigs.Services
     //// Service مسؤول عن العمليات الخاصة بـ GigAttachments
     //// =========================================================
 
-    //public class GigAttachmentsServices
-    //{
-    //    // =========================================================
-    //    // REPOSITORY
-    //    // إنشاء متغير للوصول إلى Repository
-    //    // =========================================================
+    public class GigAttachmentsServices
+    {
+        //    // =========================================================
+        //    // REPOSITORY
+        //    // إنشاء متغير للوصول إلى Repository
+        //    // =========================================================
 
-    //    private readonly IGigAttachmentsRepository _repository;
-
-
-    //    // =========================================================
-    //    // CONSTRUCTOR
-    //    // استقبال Repository عن طريق Dependency Injection
-    //    // =========================================================
-
-    //    public GigAttachmentsServices(
-    //        IGigAttachmentsRepository repository)
-    //    {
-    //        // تخزين الـ Repository داخل المتغير _repository
-    //        _repository = repository;
-    //    }
+        private readonly IGigAttachmentsRepository _repository;
 
 
-    //    // =========================================================
-    //    // CREATE ATTACHMENT
-    //    // إنشاء Attachment جديد
-    //    // =========================================================
+        //    // =========================================================
+        //    // CONSTRUCTOR
+        //    // استقبال Repository عن طريق Dependency Injection
+        //    // =========================================================
 
-    //    public async Task<GigAttachments> CreateAttachment(
-    //        GigAttachmentsInputDTO input,
-    //        int userId)
-    //    {
-    //        // =====================================================
-    //        // CREATE NEW ATTACHMENT
-    //        // إنشاء Object جديد من Model: GigAttachments
-    //        // =====================================================
-
-    //        var attachment = new GigAttachments
-    //        {
-    //            // =================================================
-    //            // GIG ID
-    //            // أخذ GigId من الـ DTO
-    //            // =================================================
-
-    //            GigId = input.GigId,
+        public GigAttachmentsServices(
+            IGigAttachmentsRepository repository)
+        {
+            // تخزين الـ Repository داخل المتغير _repository
+            _repository = repository;
+        }
 
 
-    //            // =================================================
-    //            // FILE URL
-    //            // أخذ رابط أو مسار الملف من الـ DTO
-    //            // =================================================
+        //    // =========================================================
+        //    // CREATE ATTACHMENT
+        //    // إنشاء Attachment جديد
+        //    // =========================================================
 
-    //            FileUrl = input.FileUrl,
+        public async Task<GigAttachments> CreateAttachment(
+            GigAttachmentsInputDTO input,
+            int userId)
+        {
+            //        // =====================================================
+            //        // CREATE NEW ATTACHMENT
+            //        // إنشاء Object جديد من Model: GigAttachments
+            //        // =====================================================
+
+            var attachment = new GigAttachments
+            {
+                //            // =================================================
+                //            // GIG ID
+                //            // أخذ GigId من الـ DTO
+                //            // =================================================
+
+                GigId = input.GigId,
 
 
-    //            // =================================================
-    //            // USER ID
-    //            // تحديد المستخدم الذي قام برفع الملف
-    //            // =================================================
+                //            // =================================================
+                //            // FILE URL
+                //            // أخذ رابط أو مسار الملف من الـ DTO
+                //            // =================================================
 
-    //            UserID = userId
-    //        };
+                FileUrl = input.FileUrl,
 
 
-    //        // =====================================================
-    //        // ADD ATTACHMENT
-    //        // إضافة الـ Attachment إلى قاعدة البيانات
-    //        // AddAsync يقوم أيضًا بحفظ البيانات
-    //        // =====================================================
+                //            // =================================================
+                //            // USER ID
+                //            // تحديد المستخدم الذي قام برفع الملف
+                //            // =================================================
 
-    //        return await _repository.AddAsync(attachment);
-    //    }
+                UserID = userId
+            };
+
+
+            //        // =====================================================
+            //        // ADD ATTACHMENT
+            //        // إضافة الـ Attachment إلى قاعدة البيانات
+            //        // AddAsync يقوم أيضًا بحفظ البيانات
+            //        // =====================================================
+
+            return await _repository.AddAsync(attachment);
+        }
     }
+}

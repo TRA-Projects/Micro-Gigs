@@ -7,27 +7,41 @@ using Micro_Gigs.Repositories;
 
 namespace Micro_Gigs.Services
 {
+    /// <summary>
+    /// واجهة (Interface) تحدد خدمات ومنطق العمل (Business Logic) الخاص بطلبات التقديم على الخدمات.
+    /// </summary>
     public interface IGigApplicationsService
     {
+        // استرجاع كافة الطلبات وتحويلها إلى DTOs لعرضها
         IEnumerable<GigApplicationDto> GetAllApplications();
+
+        // استرجاع طلب معين بواسطة معرّفه وتحويله إلى DTO
         GigApplicationDto? GetApplicationById(int id);
 
-        // تأكد أن نوع الإرجاع هنا هو int (أو GigApplicationDto حسب رغبتك، ولكن الأفضل int لإرجاع الـ ID عند الإنشاء كما هو معمول به في الـ Controllers المشابهة)
+        // إنشاء طلب تقديم جديد باستخدام بيانات الـ DTO وإرجاع الـ ID الخاص به
         int CreateApplication(CreateGigApplicationDto dto);
 
+        // تحديث حالة الطلب (مثل قبول أو رفض) وإرجاع قيمة نجاح العملية
         bool UpdateApplicationStatus(int id, string status);
+
+        // حذف طلب تقديم بناءً على معرّفه وإرجاع قيمة نجاح العملية
         bool DeleteApplication(int id);
     }
 
+    /// <summary>
+    /// التطبيق الفعلي (Implementation) لخدمات طلبات التقديم والمسؤول عن ربط الـ Repository بالـ DTOs.
+    /// </summary>
     public class GigApplicationsServices : IGigApplicationsService
     {
         private readonly IGigApplicationsRepo _repo;
 
+        // حقن مستودع البيانات (Repository) عبر المُنشئ (Constructor Injection)
         public GigApplicationsServices(IGigApplicationsRepo repo)
         {
             _repo = repo;
         }
 
+        // جلب جميع الطلبات وتحويل كل نموذج قاعدة بيانات (Entity) إلى DTO لعرضه في الواجهة
         public IEnumerable<GigApplicationDto> GetAllApplications()
         {
             var apps = _repo.GetAll();
@@ -43,6 +57,7 @@ namespace Micro_Gigs.Services
             });
         }
 
+        // جلب طلب واحد بالمعرّف وتحويله لـ DTO، أو إرجاع null إن لم يتم العثور عليه
         public GigApplicationDto? GetApplicationById(int id)
         {
             var a = _repo.GetById(id);
@@ -60,7 +75,7 @@ namespace Micro_Gigs.Services
             };
         }
 
-        // تم تعديل نوع الإرجاع هنا إلى int ليتطابق مع الـ Interface ويُرجع الـ ID مباشرة
+        // إنشاء كائن بيانات جديد، تعيين تاريخ اليوم والحالة الافتراضية "Pending"، ثم حفظه وإرجاع معرّفه
         public int CreateApplication(CreateGigApplicationDto dto)
         {
             var application = new GigApplications
@@ -75,10 +90,11 @@ namespace Micro_Gigs.Services
 
             _repo.Add(application);
 
-            // إرجاع المعرف (ID) الخاص بالطلب الجديد
+            // إرجاع المعرف (ID) الخاص بالطلب الجديد بعد توليده من قاعدة البيانات
             return application.ApplicationId;
         }
 
+        // البحث عن الطلب وتحديث حالته فقط، ثم حفظ التغييرات وإرجاع True إذا تم بنجاح
         public bool UpdateApplicationStatus(int id, string status)
         {
             var application = _repo.GetById(id);
@@ -89,6 +105,7 @@ namespace Micro_Gigs.Services
             return true;
         }
 
+        // البحث عن الطلب وحذفه من قاعدة البيانات وإرجاع True إذا تم بنجاح
         public bool DeleteApplication(int id)
         {
             var application = _repo.GetById(id);

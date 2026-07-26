@@ -1,14 +1,6 @@
-﻿using Micro_Gigs.Models;
-// للوصول إلى Model:
-// GigReviews
-
-using Micro_Gigs.DTOs;
-// للوصول إلى DTOs الخاصة بالـ Reviews
-
-using Micro_Gigs.Repositories.Interfaces;
-// للوصول إلى Interface:
-// IGigReviewsRepository
-
+﻿using Micro_Gigs.Models;                           // للوصول إلى Model: GigReviews
+using Micro_Gigs.DTOs;                             // للوصول إلى DTOs الخاصة بالـ Reviews
+using Micro_Gigs.Repositories.Implementations;     // للوصول إلى Class: GigReviewsRepo المباشر
 
 namespace Micro_Gigs.Services
 {
@@ -21,10 +13,10 @@ namespace Micro_Gigs.Services
     {
         // =========================================================
         // REPOSITORY
-        // إنشاء متغير للوصول إلى Repository
+        // إنشاء متغير للوصول إلى Repository المباشر
         // =========================================================
 
-        private readonly IGigReviewsRepository _repository;
+        private readonly GigReviewsRepo _repository;
 
 
         // =========================================================
@@ -32,8 +24,7 @@ namespace Micro_Gigs.Services
         // استقبال Repository عن طريق Dependency Injection
         // =========================================================
 
-        public GigReviewsServices(
-            IGigReviewsRepository repository)
+        public GigReviewsServices(GigReviewsRepo repository)
         {
             // تخزين الـ Repository داخل المتغير _repository
             _repository = repository;
@@ -58,8 +49,7 @@ namespace Micro_Gigs.Services
             {
                 // =================================================
                 // ASSIGNMENT ID
-                // أخذ رقم الـ Assignment من الـ DTO
-                // وربط التقييم بالتكليف
+                // أخذ رقم الـ Assignment من الـ DTO وربط التقييم بالتكليف
                 // =================================================
 
                 AssignmentId = input.AssignmentId,
@@ -67,8 +57,7 @@ namespace Micro_Gigs.Services
 
                 // =================================================
                 // REVIEWER ID
-                // تحديد المستخدم الذي قام بكتابة التقييم
-                // يتم أخذ User ID من الـ Token
+                // تحديد المستخدم الذي قام بكتابة التقييم (المأخوذ من Token)
                 // =================================================
 
                 ReviewerId = reviewerId,
@@ -76,8 +65,7 @@ namespace Micro_Gigs.Services
 
                 // =================================================
                 // RATING
-                // أخذ درجة التقييم من الـ DTO
-                // القيمة يجب أن تكون من 1 إلى 5
+                // أخذ درجة التقييم من الـ DTO (من 1 إلى 5)
                 // =================================================
 
                 Rating = input.Rating,
@@ -86,7 +74,6 @@ namespace Micro_Gigs.Services
                 // =================================================
                 // COMMENT
                 // أخذ التعليق من الـ DTO
-                // التعليق اختياري ويمكن أن يكون null
                 // =================================================
 
                 Comment = input.Comment
@@ -95,8 +82,7 @@ namespace Micro_Gigs.Services
 
             // =====================================================
             // ADD REVIEW
-            // إرسال الـ Review إلى Repository
-            // لإضافته وحفظه في قاعدة البيانات
+            // إرسال الـ Review إلى Repository لإضافته وحفظه في قاعدة البيانات
             // =====================================================
 
             return await _repository.AddAsync(review);

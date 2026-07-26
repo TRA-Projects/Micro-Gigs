@@ -4,7 +4,8 @@ namespace Micro_Gigs.DTOs
 {
     public class UsersInputDTOs
     {
-        // Register
+        // Receive user data from the client (Register/Login requests)
+       
         [Required(ErrorMessage = "Username is required")]
         [MaxLength(100)]
         public string UserName { get; set; } = string.Empty;
@@ -23,6 +24,7 @@ namespace Micro_Gigs.DTOs
         public string UserType { get; set; } = string.Empty; // Client or Freelancer
     }
 
+    //Return user information from the API response
     public class UsersOutputDTOs
     {
         public int UserId { get; set; }

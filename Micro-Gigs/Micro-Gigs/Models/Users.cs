@@ -53,7 +53,7 @@ namespace Micro_Gigs.Models
         public virtual List<GigReviews> ReviewsGiven { get; set; } = new List<GigReviews>();
 
         // Uploaded attachments
-        [InverseProperty("UploadedBy")]
+        [InverseProperty("UploadedByUser")]
 
         public virtual List<GigAttachments> Uploads { get; set; } = new List<GigAttachments>();
     }

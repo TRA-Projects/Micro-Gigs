@@ -1,65 +1,88 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
 using Micro_Gigs.DTOs;
+using Micro_Gigs.Services;
 
-namespace Micro_Gigs.Services
+namespace Micro_Gigs.Controllers
 {
-    public class GigApplicationsService : IGigApplicationsService
+    [Route("api/[controller]")]
+    [ApiController]
+    public class GigApplicationsController : ControllerBase
     {
-        // قائمة وهمية للتجربة أو يتم ربطها بـ DbContext الخاص بك هنا
-        private static readonly List<GigApplicationDto> _applications = new();
+        private readonly IGigApplicationsService _applicationsService;
 
-        public IEnumerable<GigApplicationDto> GetAllApplications()
+        // حقن خدمة الطلبات (Service Injection) عبر المُنشئ
+        public GigApplicationsController(IGigApplicationsService applicationsService)
         {
-            return _applications;
+            _applicationsService = applicationsService;
         }
 
-        public GigApplicationDto GetApplicationById(int id)
+        // GET: api/GigApplications
+        // استرجاع كافة الطلبات غير المحذوفة
+        [HttpGet]
+        public ActionResult<IEnumerable<GigApplicationDto>> GetAllApplications()
         {
-            return _applications.FirstOrDefault(a => a.ApplicationId == id);
+            var applications = _applicationsService.GetAllApplications();
+            return Ok(applications);
         }
 
-        public int CreateApplication(CreateGigApplicationDto dto)
+        // GET: api/GigApplications/5
+        // استرجاع طلب معين بواسطة معرّفه
+        [HttpGet("{id}")]
+        public ActionResult<GigApplicationDto> GetApplicationById(int id)
         {
-            int newId = _applications.Count > 0 ? _applications.Max(a => a.ApplicationId) + 1 : 1;
-
-            var newApp = new GigApplicationDto
+            var application = _applicationsService.GetApplicationById(id);
+            if (application == null)
             {
-                ApplicationId = newId,
-                GigId = dto.GigId,
-                FreelancerId = dto.FreelancerId,
-                ProposalText = dto.ProposalText,
-                ProposedPrice = dto.ProposedPrice,
-                ApplicationDate = System.DateTime.Now,
-                Status = "Pending"
-            };
-
-            _applications.Add(newApp);
-            return newId; // إرجاع الـ int بشكل صحيح لتجنب خطأ التحويل
+                return NotFound(new { message = $"Application with ID {id} not found." });
+            }
+            return Ok(application);
         }
 
-        public bool UpdateApplicationStatus(int applicationId, string status)
+        // POST: api/GigApplications
+        // إنشاء طلب تقديم جديد
+        [HttpPost]
+        public ActionResult<int> CreateApplication([FromBody] CreateGigApplicationDto dto)
         {
-            var app = _applications.FirstOrDefault(a => a.ApplicationId == applicationId);
-            if (app == null)
+            if (!ModelState.IsValid)
             {
-                return false;
+                return BadRequest(ModelState);
             }
 
-            app.Status = status;
-            return true;
+            int newId = _applicationsService.CreateApplication(dto);
+            return CreatedAtAction(nameof(GetApplicationById), new { id = newId }, new { id = newId, message = "Application created successfully." });
         }
 
-        public bool DeleteApplication(int id)
+        // PATCH: api/GigApplications/5/status
+        // تحديث حالة الطلب (مثل قبول أو رفض)
+        [HttpPatch("{id}/status")]
+        public IActionResult UpdateApplicationStatus(int id, [FromBody] string status)
         {
-            var app = _applications.FirstOrDefault(a => a.ApplicationId == id);
-            if (app == null)
+            if (string.IsNullOrWhiteSpace(status))
             {
-                return false;
+                return BadRequest(new { message = "Status cannot be empty." });
             }
 
-            _applications.Remove(app);
-            return true;
+            bool updated = _applicationsService.UpdateApplicationStatus(id, status);
+            if (!updated)
+            {
+                return NotFound(new { message = $"Application with ID {id} not found." });
+            }
+
+            return Ok(new { message = "Application status updated successfully." });
+        }
+
+        // DELETE: api/GigApplications/5
+        // حذف طلب تقديم (تطبيق الحذف الناعم Soft Delete)
+        [HttpDelete("{id}")]
+        public IActionResult DeleteApplication(int id)
+        {
+            bool deleted = _applicationsService.DeleteApplication(id);
+            if (!deleted)
+            {
+                return NotFound(new { message = $"Application with ID {id} not found." });
+            }
+
+            return Ok(new { message = "Application deleted successfully (Soft Delete)." });
         }
     }
 }

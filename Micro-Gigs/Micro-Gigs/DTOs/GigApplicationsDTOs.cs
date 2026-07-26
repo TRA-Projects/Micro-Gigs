@@ -55,4 +55,19 @@ namespace Micro_Gigs.DTOs
         [Range(0.01, 999999.99, ErrorMessage = "Please enter a valid proposed price between 0.01 and 999999.99")]
         public decimal ProposedPrice { get; set; }
     }
+
+    /// <summary>
+    /// نموذج DTO خاص بلوحة تحكم المشرفين (Admin) يعرض كافة تفاصيل الطلب بما فيها الحقول الإدارية.
+    /// </summary>
+    public class AdminGigApplicationDto : GigApplicationDto
+    {
+        // مؤشر لمعرفة ما إذا كان الطلب محذوفاً أم لا
+        public bool IsDeleted { get; set; }
+
+        // ملاحظات الإدارة الداخلية
+        public string? InternalNotes { get; set; }
+
+        // تقييم الإدارة للطلب
+        public int? AdminRating { get; set; }
+    }
 }

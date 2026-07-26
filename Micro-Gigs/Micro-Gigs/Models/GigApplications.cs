@@ -23,11 +23,11 @@ namespace Micro_Gigs.Models
         public int FreelancerId { get; set; }
 
         [MaxLength(2000)]
-        // نص العرض أو المقترح المقدم من المستقل (بحد أقصى 2000 حرف، وقيمة افتراضية فارغة)
+        // نص العرض أو المقترح المقدم من المستقل (بحد أقصى 2000 حرف)
         public string ProposalText { get; set; } = string.Empty;
 
         [Column(TypeName = "decimal(18,2)")]
-        // السعر المقترح لإنجاز الخدمة (تم تحديد الدقة العشرية لقاعدة البيانات)
+        // السعر المقترح لإنجاز الخدمة
         public decimal ProposedPrice { get; set; }
 
         // تاريخ وقت إنشاء طلب التقديم (قيمة افتراضية تلقائية بوقت النظام الحالي)
@@ -35,10 +35,27 @@ namespace Micro_Gigs.Models
 
         [Required]
         [StringLength(50)]
-        // حالة الطلب الحالية (مثل Pending، Accepted، Rejected، بقيمة افتراضية Pending)
+        // حالة الطلب الحالية (مثل Pending، Accepted، Rejected)
         public string Status { get; set; } = "Pending";
 
-        // خصائص التنقل (Navigation Properties) لربط الجداول ببعضها في Entity Framework
+        // ==========================================
+        // الحقول الإدارية والخاصة بالتحكم الداخلي للنظام
+        // ==========================================
+
+        // مؤشر لمعرفة ما إذا كان الطلب محذوفاً أم لا (Soft Delete)، وقيمته الافتراضية false
+        public bool IsDeleted { get; set; } = false;
+
+        [MaxLength(1000)]
+        // ملاحظات داخلية يكتبها المشرفون أو الإدارة حول الطلب (لا تظهر للمستقل)
+        public string? InternalNotes { get; set; }
+
+        // تقييم الإدارة أو صاحب العمل للطلب أو للمستقل بناءً على هذا التقديم
+        public int? AdminRating { get; set; }
+
+        // ==========================================
+        // خصائص التنقل (Navigation Properties)
+        // ==========================================
+
         [ForeignKey("GigId")]
         // كائن الخدمة المرتبط بهذا الطلب
         public virtual Gigs Gig { get; set; } = null!;

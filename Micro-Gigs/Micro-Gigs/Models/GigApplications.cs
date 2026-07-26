@@ -58,10 +58,10 @@ namespace Micro_Gigs.Models
 
         [ForeignKey("GigId")]
         // كائن الخدمة المرتبط بهذا الطلب
-        public virtual Gigs Gig { get; set; } = null!;
+        public virtual Gigs Gig { get; set; } = null;
 
         [ForeignKey("FreelancerId")]
         // كائن المستخدم (المستقل) المتقدم للطلب
-        public virtual Users Freelancer { get; set; } = null!;
+        public virtual Users Freelancer { get; set; } = null;
     }
 }

@@ -1,5 +1,6 @@
 
 using Micro_Gigs.Repositories;
+using Micro_Gigs.Repositories.Implementations;
 using Micro_Gigs.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;

@@ -1,27 +1,21 @@
 ﻿using Micro_Gigs.Models;
 
-namespace Micro_Gigs.Repositories
+namespace Micro_Gigs.Repositories.Interfaces
 {
-    // هذا الـ Interface يحدد العمليات الخاصة بالمرفقات Attachments
-    // أي Repository خاص بالمرفقات يجب أن يطبق هذه العمليات
-    public interface IGigAttachmentsRepo
+    public interface IGigAttachmentsRepository
     {
-        // إضافة مرفق جديد إلى قاعدة البيانات
-        Task AddAsync(GigAttachments attachment);
+        Task<IEnumerable<GigAttachments>> GetAllAsync();
 
-        // جلب جميع المرفقات الخاصة بـ Gig معين
-        // يتم البحث باستخدام GigId
-        Task<List<GigAttachments>> GetByGigIdAsync(Guid gigId);
+        Task<GigAttachments?> GetByIdAsync(int attachmentId);
 
-        // البحث عن مرفق معين باستخدام الـ ID
-        // إذا لم يتم العثور على المرفق يرجع null
-        Task<GigAttachments?> GetByIdAsync(Guid id);
+        Task<IEnumerable<GigAttachments>> GetByGigIdAsync(int gigId);
 
-        // حذف مرفق من قاعدة البيانات
-        void Delete(GigAttachments attachment);
+        Task<IEnumerable<GigAttachments>> GetByUserIdAsync(int userId);
 
-        // حفظ جميع التغييرات التي تمت على قاعدة البيانات
-        // يرجع true إذا تم حفظ تغيير واحد أو أكثر
-        Task<bool> SaveChangesAsync();
+        Task<GigAttachments> AddAsync(GigAttachments attachment);
+
+        Task<GigAttachments> UpdateAsync(GigAttachments attachment);
+
+        Task<bool> DeleteAsync(int attachmentId);
     }
 }

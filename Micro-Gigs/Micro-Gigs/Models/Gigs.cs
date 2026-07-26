@@ -32,15 +32,16 @@ namespace Micro_Gigs.Models
         public int ClientId { get; set; } // Foreign Key to Users table
 
         [ForeignKey("ClientId")]
-        public virtual Users Client { get; set; }//  // Navigation Properties
+        public virtual Users Client { get; set; } = null!;//  // Navigation Properties
 
         [Required]
         public int GigCategoryId { get; set; } // Foreign Key to GigCategories table
 
         [ForeignKey("GigCategoryId")]
-        public virtual GigCategories GigCategory { get; set; } // Navigation Property
+        public virtual GigCategories GigCategory { get; set; } = null!; // Navigation Property
 
-        public virtual GigAssignments GigAssignment { get; set; } // Navigation Property
+        [InverseProperty("Gig")]
+        public virtual GigAssignments GigAssignment { get; set; } = null!;// Navigation Property
         public virtual List<GigApplications> GigApplications { get; set; } = new List<GigApplications>(); // Navigation Property
         public virtual List<GigAttachments> GigAttachments { get; set; } = new List<GigAttachments>(); // Navigation Property
 

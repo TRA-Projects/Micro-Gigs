@@ -1,8 +1,67 @@
-﻿namespace Micro_Gigs.Services
+﻿using Micro_Gigs.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+
+namespace Micro_Gigs.Services
 {
     public class AuthService
     {
+        private IConfiguration config;
 
+        // Constructor Injection - appsettings.json
+        public AuthService(IConfiguration _config)
+        {
+            config = _config;
+        }
+
+        // Generate JWT Token
+        public string GenerateToken(Users user)
+        {
+            // Get JWT settings from appsettings.json
+            string secretKey = config["JwtSettings:SecretKey"]!;
+            string issuer = config["JwtSettings:Issuer"]!;
+            string audience = config["JwtSettings:Audience"]!;
+            int hours = int.Parse(config["JwtSettings:ExpiryHours"]!);
+
+
+            // Create Security Key
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(secretKey)
+            );
+
+
+            // Signing Credentials
+            var credentials = new SigningCredentials(
+                key,
+                SecurityAlgorithms.HmacSha256
+            );
+
+
+            // Claims - User information stored inside JWT
+            Claim[] claims =
+            {
+                new Claim("sub", user.UserName),
+                new Claim("userId", user.UserId.ToString()),
+                new Claim("email", user.Email),
+                new Claim("role", user.UserType) // Client or Freelancer
+            };
+
+
+            // Create Token
+            var token = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(hours),
+                signingCredentials: credentials
+            );
+
+
+            // Convert Token Object to String
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
 
     }
 }

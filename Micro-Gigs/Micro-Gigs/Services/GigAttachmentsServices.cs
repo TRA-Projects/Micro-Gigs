@@ -1,11 +1,12 @@
-﻿using Micro_Gigs.Models;
-// للوصول إلى Model: GigAttachments
+﻿// للوصول إلى Model: GigAttachments
 
 using Micro_Gigs.DTOs;
+using Micro_Gigs.Models;
+using Micro_Gigs.Repositories.Implementations;
 // للوصول إلى DTO:
 // GigAttachmentsInputDTO
 
-using Micro_Gigs.Repositories.Interfaces;
+using Micro_Gigs.Repositories;
 // للوصول إلى Interface:
 // IGigAttachmentsRepository
 
@@ -19,26 +20,21 @@ namespace Micro_Gigs.Services
 
     public class GigAttachmentsServices
     {
-        //    // =========================================================
-        //    // REPOSITORY
-        //    // إنشاء متغير للوصول إلى Repository
-        //    // =========================================================
+        /// =========================================================
+        // REPOSITORY
+        // إنشاء متغير للوصول إلى Repository المباشر
+        // =========================================================
+        private readonly GigAttachmentsRepo _repository;
 
-        private readonly IGigAttachmentsRepository _repository;
-
-
-        //    // =========================================================
-        //    // CONSTRUCTOR
-        //    // استقبال Repository عن طريق Dependency Injection
-        //    // =========================================================
-
-        public GigAttachmentsServices(
-            IGigAttachmentsRepository repository)
+        // =========================================================
+        // CONSTRUCTOR
+        // استقبال Repository عن طريق Dependency Injection
+        // =========================================================
+        public GigAttachmentsServices(GigAttachmentsRepo repository)
         {
             // تخزين الـ Repository داخل المتغير _repository
             _repository = repository;
         }
-
 
         //    // =========================================================
         //    // CREATE ATTACHMENT

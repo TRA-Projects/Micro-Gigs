@@ -1,34 +1,32 @@
-﻿using Microsoft.EntityFrameworkCore;       // لاستخدام ToListAsync و FirstOrDefaultAsync
-using Micro_Gigs.Models;                   // للوصول إلى Model: GigAttachments
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Micro_Gigs.Models;
 
 namespace Micro_Gigs.Repositories.Implementations
 {
-    // Repository مسؤول عن التعامل مع بيانات GigAttachments في قاعدة البيانات
     public class GigAttachmentsRepo
     {
-        // إنشاء متغير خاص للوصول إلى قاعدة البيانات
         private readonly MicroGigsContext _context;
 
-        // Constructor يستقبل MicroGigsContext عن طريق Dependency Injection
         public GigAttachmentsRepo(MicroGigsContext context)
         {
-            // تخزين الـ Context داخل المتغير _context
             _context = context;
         }
 
         // =========================================================
         // GET ALL
-        // جلب جميع الـ Attachments الموجودة في قاعدة البيانات
         // =========================================================
         public async Task<IEnumerable<GigAttachments>> GetAllAsync()
         {
             return await _context.Attachments
+                .AsNoTracking()
                 .ToListAsync();
         }
 
         // =========================================================
         // GET BY ID
-        // جلب Attachment واحد باستخدام AttachmentId
         // =========================================================
         public async Task<GigAttachments?> GetByIdAsync(int attachmentId)
         {
@@ -38,29 +36,29 @@ namespace Micro_Gigs.Repositories.Implementations
 
         // =========================================================
         // GET BY GIG ID
-        // جلب جميع الملفات المرتبطة بـ Gig معين
         // =========================================================
         public async Task<IEnumerable<GigAttachments>> GetByGigIdAsync(int gigId)
         {
             return await _context.Attachments
                 .Where(a => a.GigId == gigId)
+                .AsNoTracking()
                 .ToListAsync();
         }
 
         // =========================================================
         // GET BY USER ID
-        // جلب جميع الملفات التي رفعها User معين
+        // تم تصحيح اسم الحقل إلى UserID ليتطابق مع Model GigAttachments
         // =========================================================
         public async Task<IEnumerable<GigAttachments>> GetByUserIdAsync(int userId)
         {
             return await _context.Attachments
-                .Where(a => a.UserID == userId)
+                .Where(a => a.UploadedById == userId) 
+                .AsNoTracking()
                 .ToListAsync();
         }
 
         // =========================================================
         // ADD
-        // إضافة Attachment جديد إلى قاعدة البيانات
         // =========================================================
         public async Task<GigAttachments> AddAsync(GigAttachments attachment)
         {
@@ -71,7 +69,6 @@ namespace Micro_Gigs.Repositories.Implementations
 
         // =========================================================
         // UPDATE
-        // تعديل Attachment موجود
         // =========================================================
         public async Task<GigAttachments> UpdateAsync(GigAttachments attachment)
         {
@@ -82,7 +79,6 @@ namespace Micro_Gigs.Repositories.Implementations
 
         // =========================================================
         // DELETE
-        // حذف Attachment باستخدام AttachmentId
         // =========================================================
         public async Task<bool> DeleteAsync(int attachmentId)
         {

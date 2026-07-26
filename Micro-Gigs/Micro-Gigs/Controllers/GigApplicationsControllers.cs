@@ -10,14 +10,12 @@ namespace Micro_Gigs.Controllers
     {
         private readonly IGigApplicationsService _applicationsService;
 
-        // حقن خدمة الطلبات (Service Injection) عبر المُنشئ
         public GigApplicationsController(IGigApplicationsService applicationsService)
         {
             _applicationsService = applicationsService;
         }
 
         // GET: api/GigApplications
-        // استرجاع كافة الطلبات غير المحذوفة
         [HttpGet]
         public ActionResult<IEnumerable<GigApplicationDto>> GetAllApplications()
         {
@@ -26,7 +24,6 @@ namespace Micro_Gigs.Controllers
         }
 
         // GET: api/GigApplications/5
-        // استرجاع طلب معين بواسطة معرّفه
         [HttpGet("{id}")]
         public ActionResult<GigApplicationDto> GetApplicationById(int id)
         {
@@ -39,7 +36,6 @@ namespace Micro_Gigs.Controllers
         }
 
         // POST: api/GigApplications
-        // إنشاء طلب تقديم جديد
         [HttpPost]
         public ActionResult<int> CreateApplication([FromBody] CreateGigApplicationDto dto)
         {
@@ -53,7 +49,6 @@ namespace Micro_Gigs.Controllers
         }
 
         // PATCH: api/GigApplications/5/status
-        // تحديث حالة الطلب (مثل قبول أو رفض)
         [HttpPatch("{id}/status")]
         public IActionResult UpdateApplicationStatus(int id, [FromBody] string status)
         {
@@ -72,7 +67,6 @@ namespace Micro_Gigs.Controllers
         }
 
         // DELETE: api/GigApplications/5
-        // حذف طلب تقديم (تطبيق الحذف الناعم Soft Delete)
         [HttpDelete("{id}")]
         public IActionResult DeleteApplication(int id)
         {

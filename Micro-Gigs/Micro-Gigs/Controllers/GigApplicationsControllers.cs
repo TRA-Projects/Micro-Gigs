@@ -8,9 +8,9 @@ namespace Micro_Gigs.Controllers
     [ApiController]
     public class GigApplicationsController : ControllerBase
     {
-        private readonly IGigApplicationsService _applicationsService;
+        private readonly GigApplicationsServices _applicationsService;
 
-        public GigApplicationsController(IGigApplicationsService applicationsService)
+        public GigApplicationsController(GigApplicationsServices applicationsService)
         {
             _applicationsService = applicationsService;
         }

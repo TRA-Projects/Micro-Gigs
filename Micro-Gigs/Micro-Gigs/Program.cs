@@ -22,7 +22,7 @@ namespace Micro_Gigs
             // service lifetimes 
             
             // 2. register repositories 
-            builder.Services.AddScoped<IGigApplicationsRepo, GigApplicationsRepo>();
+            builder.Services.AddScoped<GigApplicationsRepo>();
             builder.Services.AddScoped<GigAssignmentsRepo>();
             builder.Services.AddScoped<GigAttachmentsRepo>();
             builder.Services.AddScoped<GigCategoriesRepo>();
@@ -32,7 +32,7 @@ namespace Micro_Gigs
 
             // 3. register services
             builder.Services.AddScoped<AuthService>();
-            builder.Services.AddScoped<IGigApplicationsService>();
+            builder.Services.AddScoped<GigApplicationsServices>();
             builder.Services.AddScoped<GigAssignmentsServices>();
             builder.Services.AddScoped<GigAttachmentsServices>();
             builder.Services.AddScoped<GigCategoriesServices>();

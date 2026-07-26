@@ -7,27 +7,16 @@ using Micro_Gigs.Repositories;
 
 namespace Micro_Gigs.Services
 {
-    public interface IGigApplicationsService
+    public class GigApplicationsServices
     {
-        IEnumerable<GigApplicationDto> GetAllApplications();
-        GigApplicationDto? GetApplicationById(int id);
-        AdminGigApplicationDto? GetAdminApplicationById(int id);
-        int CreateApplication(CreateGigApplicationDto dto);
-        bool UpdateApplicationStatus(int id, string status);
-        bool UpdateAdminNotesAndRating(int id, string? internalNotes, int? adminRating);
-        bool DeleteApplication(int id);
-    }
+        private readonly GigApplicationsRepo _repo;
 
-    public class GigApplicationsServices : IGigApplicationsService
-    {
-        private readonly IGigApplicationsRepo _repo;
-
-        public GigApplicationsServices(IGigApplicationsRepo repo)
+        public GigApplicationsServices(GigApplicationsRepo repo)
         {
             _repo = repo;
         }
 
-        // جلب جميع الطلبات مع استبعاد المحذوفة نعمياً يدوياً
+        // جلب جميع الطلبات مع استبعاد المحذوفة منطقياً يدوياً
         public IEnumerable<GigApplicationDto> GetAllApplications()
         {
             var apps = _repo.GetAll().Where(a => !a.IsDeleted);

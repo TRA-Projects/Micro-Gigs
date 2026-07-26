@@ -91,7 +91,7 @@ namespace Micro_Gigs.Services
 
 
             // Generate JWT token after successful login
-            //string token = authService.GenerateToken(user);
+            string token = authService.GenerateToken(user);
 
 
 

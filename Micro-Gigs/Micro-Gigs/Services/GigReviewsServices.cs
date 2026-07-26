@@ -52,7 +52,7 @@ namespace Micro_Gigs.Services
                 // أخذ رقم الـ Assignment من الـ DTO وربط التقييم بالتكليف
                 // =================================================
 
-                AssignmentId = input.AssignmentId,
+                AssId = input.AssignmentId,
 
 
                 // =================================================
@@ -60,8 +60,7 @@ namespace Micro_Gigs.Services
                 // تحديد المستخدم الذي قام بكتابة التقييم (المأخوذ من Token)
                 // =================================================
 
-                ReviewerId = reviewerId,
-
+                ClientId = reviewerId,
 
                 // =================================================
                 // RATING

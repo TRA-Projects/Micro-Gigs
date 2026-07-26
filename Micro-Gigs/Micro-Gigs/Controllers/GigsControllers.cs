@@ -62,7 +62,7 @@ namespace Micro_Gigs.Controllers
 
         [HttpPut("Update")]
         [Authorize(Roles = "Client")]
-        public IActionResult Update([FromBody] int id, [FromBody] CreateGigDto dto)
+        public IActionResult Update([FromQuery] int id, [FromBody] CreateGigDto dto)
         {
             var success = gigsServices.UpdateGig(id, dto);
             if (!success) return NotFound();
@@ -73,7 +73,7 @@ namespace Micro_Gigs.Controllers
 
         [HttpDelete("Delete")]
         [Authorize(Roles = "Client")]
-        public IActionResult Delete([FromBody] int id)
+        public IActionResult Delete([FromQuery] int id)
         {
             var success = gigsServices.DeleteGig(id);
             if (!success) return NotFound();

@@ -53,7 +53,7 @@ namespace Micro_Gigs.Controllers
             // التحقق من وجود القيمة وإمكانية تحويلها إلى رقم صحفي (int)
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {
-                return Unauthorized(new { message = "تعذر الحصول على معرف المستخدم من التوكن." });
+                return Unauthorized(new { message = "Unable to retrieve user ID from token. Please write to me.." });
             }
 
             // =====================================================

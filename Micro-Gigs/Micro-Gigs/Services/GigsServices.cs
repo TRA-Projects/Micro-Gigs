@@ -15,6 +15,7 @@ namespace Micro_Gigs.Services
             usersRepo = _usersRepo;
         }
 
+        // Helper: تحويل Model إلى DTO
         private GigResponseDto MapToDto(Gigs gig)
         {
             return new GigResponseDto
@@ -26,8 +27,8 @@ namespace Micro_Gigs.Services
                 DueDate = gig.DueDate,
                 Status = gig.Status,
                 PostedDate = gig.PostedDate,
-                ClientName = gig.Client?.UserName ?? "Unknown",
-                CategoryName = gig.GigCategory?.CategoryName ?? "Unknown"
+                ClientName = gig.Client?.UserName??"Unknown",
+                CategoryName = gig.GigCategory?.CategoryName??"Unknown"
             };
         }
 

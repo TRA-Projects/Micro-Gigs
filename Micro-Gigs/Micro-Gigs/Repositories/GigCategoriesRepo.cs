@@ -16,6 +16,11 @@ namespace Micro_Gigs.Repositories
             return context.Categories.ToList();
         }
 
+        public GigCategories? GetById(int id)
+        {
+            return context.Categories.FirstOrDefault( c => c.GigCategoryId == id);
+        }
+
         public void Add(GigCategories category)
         {
             context.Categories.Add(category);

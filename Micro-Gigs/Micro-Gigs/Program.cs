@@ -15,13 +15,12 @@ namespace Micro_Gigs
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // register context / ADD DbContaxt
-            builder.Services.AddDbContext<MicroGigsContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            // 1.register context / ADD DbContaxt
+            builder.Services.AddDbContext<MicroGigsContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // service lifetimes 
             
-            // register repositories 
+            // 2. register repositories 
             builder.Services.AddScoped<GigApplicationsRepo>();
             builder.Services.AddScoped<GigAssignmentsRepo>();
             builder.Services.AddScoped<GigAttachmentsRepo>();
@@ -30,7 +29,8 @@ namespace Micro_Gigs
             builder.Services.AddScoped<GigsRepo>();
             builder.Services.AddScoped<UsersRepo>();
 
-            // register services
+            // 3. register services
+            builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<GigApplicationsServices>();
             builder.Services.AddScoped<GigAssignmentsServices>();
             builder.Services.AddScoped<GigAttachmentsServices>();
@@ -39,21 +39,16 @@ namespace Micro_Gigs
             builder.Services.AddScoped<GigsServices>();
             builder.Services.AddScoped<UsersServices>();
 
+            // 4. Controllers
+            builder.Services.AddControllers();
 
-
-            // ── start JWT Authentication ─────────────────────────────────────────────
-
+            // 5. JWT Authentication
             var jwtKey = builder.Configuration["JwtSettings:SecretKey"];
             var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
             var jwtAudience = builder.Configuration["JwtSettings:Audience"];
 
-
-            builder.Services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
                 {
-                    options.MapInboundClaims = false;
-
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -62,9 +57,8 @@ namespace Micro_Gigs
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = jwtIssuer,
                         ValidAudience = jwtAudience,
-                        RoleClaimType = "role",
                         IssuerSigningKey = new SymmetricSecurityKey(
-                                                       Encoding.UTF8.GetBytes(jwtKey))
+                            Encoding.UTF8.GetBytes(jwtKey!))
                     };
 
                     options.Events = new JwtBearerEvents
@@ -86,19 +80,14 @@ namespace Micro_Gigs
                             return Task.CompletedTask;
                         }
                     };
+
                 });
 
             builder.Services.AddAuthorization();
-            // ── end JWT Authentication ─────────────────────────────────────────────
 
+            // 6. Swagger مع JWT
 
-            builder.Services.AddControllers();
-
-
-            // ── Swagger with JWT support ───────────────────────────────────────
             builder.Services.AddEndpointsApiExplorer();
-            //  builder.Services.AddSwaggerGen();
-
 
             builder.Services.AddSwaggerGen(c =>
             {
@@ -109,51 +98,49 @@ namespace Micro_Gigs
                     Scheme = "bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Enter your JWT token in the box below"
+                    Description = "Enter your JWT token in the box belo"
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
                 {
-                    Type = ReferenceType.SecurityScheme,
-                    Id   = "Bearer"
-                }
-            },
-            new List<string>()
-        }
-    });
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new List<string>()
+                    }
+                });
             });
 
-            var app = builder.Build(); 
-            
-            //end line of service container
+
+          
+            // AREA 2: MIDDLEWARE PIPELINE
          
 
-
-            // Configure the HTTP request pipeline / middleware pipeline
+            var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
+
                 app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();
 
-            //jwt
-            app.UseAuthentication();  // ← must be before UseAuthorization
-            app.UseAuthorization();
-            //jwt
+            app.UseAuthentication();
 
+            app.UseAuthorization();
 
             app.MapControllers();
 
-            // run application
             app.Run();
         }
     }
 }
+      

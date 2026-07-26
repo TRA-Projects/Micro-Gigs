@@ -8,14 +8,14 @@ namespace Micro_Gigs.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid GigId { get; set; }
+        public int GigId { get; set; }
 
         [Required]
         [MaxLength(200)]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         [MaxLength(2000)]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Budget { get; set; }
@@ -24,9 +24,25 @@ namespace Micro_Gigs.Models
 
         [Required]
         [MaxLength(20)]
-        public string Status { get; set; } // Open, Assigned, Completed, Cancelled
+        public string Status { get; set; } = "Open"; // Open, Assigned, Completed, Cancelled
 
-        public DateTime PostedDate { get; set; }
+        public DateTime PostedDate { get; set; } = DateTime.Now;
+
+        [Required]
+        public int ClientId { get; set; } // Foreign Key to Users table
+
+        [ForeignKey("ClientId")]
+        public virtual Users Client { get; set; }//  // Navigation Properties
+
+        [Required]
+        public int GigCategoryId { get; set; } // Foreign Key to GigCategories table
+
+        [ForeignKey("GigCategoryId")]
+        public virtual GigCategories GigCategory { get; set; } // Navigation Property
+
+        public virtual GigAssignments GigAssignment { get; set; } // Navigation Property
+        public virtual List<GigApplications> GigApplications { get; set; } = new List<GigApplications>(); // Navigation Property
+        public virtual List<GigAttachments> GigAttachments { get; set; } = new List<GigAttachments>(); // Navigation Property
 
     }
 }

@@ -1,15 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-// يحتوي على ControllerBase و HttpPost و HttpGet و HttpPut و HttpDelete
-
-using Micro_Gigs.Services;
-// للوصول إلى Service:
-// GigAttachmentsServices
-
-using Micro_Gigs.DTOs;
-// للوصول إلى DTOs:
-// GigAttachmentsInputDTO
-// GigAttachmentsOutputDTO
-
+﻿using Microsoft.AspNetCore.Mvc;        // يحتوي على ControllerBase و HttpPost و HttpGet و HttpPut و HttpDelete
+using Microsoft.AspNetCore.Authorization; // لاستخدام أتربيوت [Authorize]
+using System.Security.Claims;          // لاستخراج البيانات من الـ JWT Claims
+using Micro_Gigs.Services;            // للوصول إلى Service: GigAttachmentsServices
+using Micro_Gigs.DTOs;                // للوصول إلى DTOs: GigAttachmentsInputDTO, GigAttachmentsOutputDTO
 
 namespace Micro_Gigs.Controllers
 {
@@ -18,21 +11,15 @@ namespace Micro_Gigs.Controllers
     // Controller مسؤول عن التعامل مع طلبات GigAttachments
     // =========================================================
 
-    [ApiController]
-    // تحديد أن هذا Controller خاص بـ Web API
-
-    [Route("api/[controller]")]
-    // تحديد المسار الأساسي للـ Controller
-    // مثال:
-    // api/GigAttachments
-
+    [Authorize] // حماية الـ Controller لضمان وجود JWT Token صالحة
+    [ApiController] // تحديد أن هذا Controller خاص بـ Web API
+    [Route("api/[controller]")] // تحديد المسار الأساسي: api/GigAttachments
     public class GigAttachmentsController : ControllerBase
     {
         // =========================================================
         // SERVICE
         // إنشاء متغير للوصول إلى GigAttachmentsServices
         // =========================================================
-
         private readonly GigAttachmentsServices _service;
 
 
@@ -40,9 +27,7 @@ namespace Micro_Gigs.Controllers
         // CONSTRUCTOR
         // استقبال الـ Service عن طريق Dependency Injection
         // =========================================================
-
-        public GigAttachmentsController(
-            GigAttachmentsServices service)
+        public GigAttachmentsController(GigAttachmentsServices service)
         {
             // تخزين الـ Service داخل المتغير _service
             _service = service;
@@ -54,28 +39,28 @@ namespace Micro_Gigs.Controllers
         // POST: api/GigAttachments
         // إنشاء Attachment جديد
         // =========================================================
-
         [HttpPost]
-        public async Task<IActionResult> CreateAttachment(
-            [FromBody] GigAttachmentsInputDTO input)
+        public async Task<IActionResult> CreateAttachment([FromBody] GigAttachmentsInputDTO input)
         {
             // =====================================================
-            // USER ID
-            // تحديد رقم المستخدم الذي قام برفع الملف
-            // مؤقتاً نستخدم User ID = 1
-            // لاحقاً يمكن أخذه من JWT Token
+            // USER ID FROM TOKEN
+            // استخراج رقم المستخدم تلقائياً من الـ JWT Token
             // =====================================================
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                           ?? User.FindFirst("sub")?.Value
+                           ?? User.FindFirst("id")?.Value;
 
-            int userId = 1;
-
+            // التحقق من وجود القيمة وإمكانية تحويلها إلى رقم صحفي (int)
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+            {
+                return Unauthorized(new { message = "تعذر الحصول على معرف المستخدم من التوكن." });
+            }
 
             // =====================================================
             // CALL SERVICE
-            // استدعاء Service لإنشاء Attachment جديد
+            // استدعاء Service لإنشاء Attachment جديد مع تمرير userId المستخرج
             // =====================================================
-
-            var attachment =
-                await _service.CreateAttachment(input, userId);
+            var attachment = await _service.CreateAttachment(input, userId);
 
 
             // =====================================================
@@ -83,7 +68,6 @@ namespace Micro_Gigs.Controllers
             // إرجاع البيانات التي تمت إضافتها
             // HTTP 200 OK
             // =====================================================
-
             return Ok(attachment);
         }
     }

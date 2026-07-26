@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Micro_Gigs.DTOs;
-using Micro_Gigs.Services;
+﻿using Microsoft.AspNetCore.Mvc;        // يحتوي على ControllerBase و HttpPost و HttpGet إلخ
+using Microsoft.AspNetCore.Authorization; // لاستخدام أتربيوت [Authorize]
+using System.Security.Claims;          // لاستخراج البيانات من الـ JWT Claims
+using Micro_Gigs.DTOs;                // للوصول إلى DTOs
+using Micro_Gigs.Services;            // للوصول إلى Services
 
 namespace Micro_Gigs.Controllers
 {
@@ -9,6 +11,7 @@ namespace Micro_Gigs.Controllers
     // Controller مسؤول عن التعامل مع طلبات GigReviews
     // =========================================================
 
+    [Authorize] // حماية الـ Controller لضمان وجود JWT Token صالحة
     [ApiController]
     [Route("api/[controller]")]
     public class GigReviewsController : ControllerBase
@@ -26,8 +29,7 @@ namespace Micro_Gigs.Controllers
         // استقبال Service عن طريق Dependency Injection
         // =========================================================
 
-        public GigReviewsController(
-            GigReviewsServices service)
+        public GigReviewsController(GigReviewsServices service)
         {
             _service = service;
         }
@@ -40,22 +42,25 @@ namespace Micro_Gigs.Controllers
         // =========================================================
 
         [HttpPost]
-        public async Task<IActionResult> CreateReview(
-            [FromBody] GigReviewsInputDTO input)
+        public async Task<IActionResult> CreateReview([FromBody] GigReviewsInputDTO input)
         {
             // -----------------------------------------------------
-            // مؤقتاً نضع Reviewer ID = 1
-            // لاحقاً يتم أخذ User ID من JWT Token
+            // استخراج Reviewer ID تلقائياً من الـ JWT Token
+            // -----------------------------------------------------
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                           ?? User.FindFirst("sub")?.Value
+                           ?? User.FindFirst("id")?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int reviewerId))
+            {
+                return Unauthorized(new { message = "تعذر الحصول على معرف المستخدم من التوكن." });
+            }
+
+            // -----------------------------------------------------
+            // استدعاء Service لإنشاء Review مع تمرير reviewerId المستخرج
             // -----------------------------------------------------
 
-            int reviewerId = 1;
-
-            // -----------------------------------------------------
-            // استدعاء Service لإنشاء Review
-            // -----------------------------------------------------
-
-            var review =
-                await _service.CreateReview(input, reviewerId);
+            var review = await _service.CreateReview(input, reviewerId);
 
             // -----------------------------------------------------
             // إرجاع البيانات بعد الإنشاء

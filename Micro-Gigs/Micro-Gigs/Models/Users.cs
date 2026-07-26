@@ -26,13 +26,15 @@ namespace Micro_Gigs.Models
         [Required]
         public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
 
-        //
+        //password hash (JWT)
         [Required]
         public string PasswordHash{ get; set; } = string.Empty;
+
+
         // Navigation Properties------------------------------------------------------
 
         // User as Client
-
+ 
         [InverseProperty("Client")]
         public virtual List<Gigs> PostedGigs { get; set; } = new List<Gigs>();
 

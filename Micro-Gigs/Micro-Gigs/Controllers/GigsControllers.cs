@@ -60,7 +60,7 @@ namespace Micro_Gigs.Controllers
             return CreatedAtAction(nameof(GetById), new { id = gig.GigId }, gig);
         }
 
-        [HttpPost("Update")]
+        [HttpPut("Update")]
         [Authorize(Roles = "Client")]
         public IActionResult Update([FromBody] int id, [FromBody] CreateGigDto dto)
         {
@@ -71,7 +71,7 @@ namespace Micro_Gigs.Controllers
         }
 
 
-        [HttpPost("Delete")]
+        [HttpDelete("Delete")]
         [Authorize(Roles = "Client")]
         public IActionResult Delete([FromBody] int id)
         {

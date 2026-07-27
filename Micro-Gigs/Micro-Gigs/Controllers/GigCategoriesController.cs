@@ -7,11 +7,11 @@ namespace Micro_Gigs.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class GigCategoriesControllers : ControllerBase
+    public class GigCategoriesController : ControllerBase
     {
         private GigCategoriesServices categoriesServices;
 
-        public GigCategoriesControllers(GigCategoriesServices _categoriesServices)
+        public GigCategoriesController(GigCategoriesServices _categoriesServices)
         {
             categoriesServices = _categoriesServices;
         }

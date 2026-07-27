@@ -43,6 +43,17 @@ namespace Micro_Gigs
             // 4. Controllers
             builder.Services.AddControllers();
 
+            // 4.1 CORS - allow requests from frontend (adjust origins as needed)
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+            });
+
             // 5. JWT Authentication
             var jwtKey = builder.Configuration["JwtSettings:SecretKey"];
             var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
@@ -133,6 +144,9 @@ namespace Micro_Gigs
             }
 
             app.UseHttpsRedirection();
+
+            // Enable CORS
+            app.UseCors("AllowAll");
 
             app.UseAuthentication();
 

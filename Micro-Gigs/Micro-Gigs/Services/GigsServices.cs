@@ -79,10 +79,11 @@ namespace Micro_Gigs.Services
             return MapToDto(gig);
         }
 
-        public bool UpdateGig(int id, CreateGigDto dto)
+        public bool UpdateGig(int id, CreateGigDto dto, int clientId)
         {
             var gig = gigsRepo.GetById(id);
             if (gig == null) return false;
+            if (gig.ClientId != clientId) return false;
 
             gig.Title = dto.Title;
             gig.Description = dto.Description;

@@ -10,15 +10,15 @@ namespace Micro_Gigs.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class GigsControllers : ControllerBase
+    public class GigsController : ControllerBase
     {
         private GigsServices gigsServices;
         private GigsRepo gigsRepo;
 
-        public GigsControllers(GigsServices _gigsServices, GigsRepo _gigsRepo) 
+        public GigsController(GigsServices _gigsServices, GigsRepo _gigsRepo) 
         {
             gigsServices = _gigsServices;
-            gigsRepo = _gigsRepo; // assign injected repo
+            gigsRepo = _gigsRepo;
         }
 
         [HttpGet("GetAll")]
@@ -58,7 +58,7 @@ namespace Micro_Gigs.Controllers
             int clientId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
             var gig = gigsServices.CreateGig(dto, clientId);
-            if (gig == null) return BadRequest(new { massage = "Only client can create gigs" });
+            if (gig == null) return BadRequest(new { message = "Only client can create gigs" });
 
             return CreatedAtAction(nameof(GetById), new { id = gig.GigId }, gig);
         }
@@ -77,7 +77,7 @@ namespace Micro_Gigs.Controllers
             if (fullGig == null || fullGig.ClientId != clientId)
                 return Forbid();  // 403
 
-            var success = gigsServices.UpdateGig(id, dto);
+            var success = gigsServices.UpdateGig(id, dto, clientId);
             if (!success) return NotFound();
 
             return NoContent();

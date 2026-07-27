@@ -131,7 +131,6 @@ namespace Micro_Gigs.Controllers
             var success = usersService.Delete(id);
 
 
-
             if (!success)
                 return NotFound(new
                 {
@@ -139,21 +138,9 @@ namespace Micro_Gigs.Controllers
                 });
 
 
-
             return NoContent();
         }
 
-
-
-        // Read custom value from request header
-        [HttpGet("HeaderExample")]
-        public IActionResult HeaderExample(
-            [FromHeader(Name = "User-Type")] string userType)
-        {
-            return Ok(new
-            {
-                message = $"User type: {userType}"
-            });
-        }
+        
     }
 }

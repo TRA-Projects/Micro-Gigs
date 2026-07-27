@@ -75,7 +75,7 @@ namespace Micro_Gigs.Services
             var gig = _gigsRepo.GetById(dto.GigId);
 
             // التأكد أن الخدمة موجودة وحالتها Assigned
-            if (gig == null || gig.Status != "Assigned")
+            if (gig == null || gig.Status != "Open")
                 return null;
 
             // إنشاء كائن جديد
@@ -90,6 +90,8 @@ namespace Micro_Gigs.Services
 
             // حفظ التعيين في قاعدة البيانات
             _assignmentsRepo.Add(assignment);
+            gig.Status = "Assigned";
+            _gigsRepo.Update(gig);
 
             // إرجاع البيانات على شكل DTO
             return MapToDto(assignment);

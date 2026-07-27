@@ -25,7 +25,7 @@ namespace Micro_Gigs.Controllers
 
 
         [HttpGet("GetById")]
-        public ActionResult GetById([FromBody] int id)
+        public ActionResult GetById([FromQuery] int id)
         {
             var category = categoriesServices.GetCategoryById(id);
             if (category == null) return NotFound();

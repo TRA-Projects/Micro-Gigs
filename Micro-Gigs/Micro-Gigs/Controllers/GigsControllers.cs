@@ -1,4 +1,5 @@
 ﻿using Micro_Gigs.DTOs;
+using Micro_Gigs.Repositories;
 using Micro_Gigs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,12 @@ namespace Micro_Gigs.Controllers
     public class GigsControllers : ControllerBase
     {
         private GigsServices gigsServices;
+        private GigsRepo gigsRepo;
 
-        public GigsControllers(GigsServices _gigsServices)
+        public GigsControllers(GigsServices _gigsServices, GigsRepo _gigsRepo) 
         {
             gigsServices = _gigsServices;
+            gigsRepo = _gigsRepo; // assign injected repo
         }
 
         [HttpGet("GetAll")]
@@ -64,6 +67,16 @@ namespace Micro_Gigs.Controllers
         [Authorize(Roles = "Client")]
         public IActionResult Update([FromQuery] int id, [FromBody] CreateGigDto dto)
         {
+            int clientId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var gig = gigsServices.GetGigById(id);
+            if (gig == null) return NotFound();
+
+            //  التحقق من الملكية
+            var fullGig = gigsRepo.GetById(id); // use instance
+            if (fullGig == null || fullGig.ClientId != clientId)
+                return Forbid();  // 403
+
             var success = gigsServices.UpdateGig(id, dto);
             if (!success) return NotFound();
 
@@ -75,6 +88,16 @@ namespace Micro_Gigs.Controllers
         [Authorize(Roles = "Client")]
         public IActionResult Delete([FromQuery] int id)
         {
+            int clientId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+            var fullGig = gigsRepo.GetById(id);
+            if (fullGig == null) return NotFound();
+
+            //  التحقق من الملكية
+            if (fullGig.ClientId != clientId)
+                return Forbid();
+
+
             var success = gigsServices.DeleteGig(id);
             if (!success) return NotFound();
 

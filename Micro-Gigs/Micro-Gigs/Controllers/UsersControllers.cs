@@ -7,24 +7,25 @@ using static Micro_Gigs.DTOs.UsersInputDTOs;
 namespace Micro_Gigs.Controllers
 {
     [ApiController]
-    [Route("user")]
+    [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
         private UsersServices usersService;
 
 
-        // Constructor Injection: Inject UsersServices using Dependency Injection
+        // Dependency Injection
         public UsersController(UsersServices _usersService)
         {
             usersService = _usersService;
         }
 
 
-        // POST user/register
-        // Public endpoint - No authentication required
+
+        // Register new user
+        // Receives user data from request body
         [HttpPost("Register")]
         public IActionResult Register(
-            [FromBody] UsersInputDTOs.RegisterUserDto dto)
+            [FromBody] RegisterUserDto dto)
         {
             var user = usersService.Register(dto);
 
@@ -41,12 +42,12 @@ namespace Micro_Gigs.Controllers
 
 
 
-        // Login user and generate JWT token
-        // Public endpoint - No authentication required
+        // Authenticate user and generate token
         [HttpPost("Login")]
-        public IActionResult Login([FromBody] LoginUserDto dto)
+        public IActionResult Login(
+            [FromBody] LoginUserDto dto)
         {
-            LoginResponseDto result = usersService.Login(dto);
+            var result = usersService.Login(dto);
 
 
             if (result == null)
@@ -61,8 +62,8 @@ namespace Micro_Gigs.Controllers
 
 
 
-        // Get all users
-        // Protected endpoint - Authenticated users only
+        // Retrieve all users
+        // Requires authentication
         [HttpGet("GetAll")]
         [Authorize(Roles = "Client,Freelancer")]
         public IActionResult GetAll()
@@ -74,13 +75,12 @@ namespace Micro_Gigs.Controllers
 
 
 
-
-
-        // Get user details by ID
-        // Protected endpoint - Authenticated users only
-        [HttpGet("GetById/{id}")]
+        // Retrieve user by ID
+        // ID received from query string
+        [HttpGet("GetById")]
         [Authorize(Roles = "Client,Freelancer")]
-        public IActionResult GetById(int id)
+        public IActionResult GetById(
+            [FromQuery] int id)
         {
             var user = usersService.GetById(id);
 
@@ -97,50 +97,63 @@ namespace Micro_Gigs.Controllers
 
 
 
-
-
-        // Update user information
-        // Protected endpoint - Authenticated users only
+        // Update existing user information
+        // ID from route and data from request body
         [HttpPut("Update/{id}")]
         [Authorize(Roles = "Client,Freelancer")]
         public IActionResult Update(
-            int id,
-            [FromBody] UsersInputDTOs.UpdateUserDto dto)
+            [FromRoute] int id,
+            [FromBody] UpdateUserDto dto)
         {
-            var updatedUser = usersService.Update(id, dto);
+            var user = usersService.Update(id, dto);
 
 
-            if (updatedUser == null)
+
+            if (user == null)
                 return NotFound(new
                 {
                     message = $"User with ID {id} was not found."
                 });
 
 
-            return Ok(updatedUser);
+
+            return Ok(user);
+        }
+
+
+        // Delete user account
+        // ID received from query string
+        [HttpDelete("Delete")]
+        [Authorize(Roles = "Client,Freelancer")]
+        public IActionResult Delete(
+            [FromQuery] int id)
+        {
+            var success = usersService.Delete(id);
+
+
+
+            if (!success)
+                return NotFound(new
+                {
+                    message = $"User with ID {id} was not found."
+                });
+
+
+
+            return NoContent();
         }
 
 
 
-
-
-        // Delete user account
-        // Protected endpoint - Authenticated users only
-        [HttpDelete("Delete/{id}")]
-        [Authorize(Roles = "Client,Freelancer")]
-        public IActionResult Delete(int id)
+        // Read custom value from request header
+        [HttpGet("HeaderExample")]
+        public IActionResult HeaderExample(
+            [FromHeader(Name = "User-Type")] string userType)
         {
-            bool deleted = usersService.Delete(id);
-
-
-            if (!deleted)
-                return NotFound(new
-                {
-                    message = $"User with ID {id} was not found."
-                });
-
-
-            return NoContent();
+            return Ok(new
+            {
+                message = $"User type: {userType}"
+            });
         }
     }
 }

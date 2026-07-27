@@ -27,7 +27,9 @@ namespace Micro_Gigs
             if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(
-                    "Server=localhost;Database=Micro_GigsDB;Trusted_Connection=True;TrustServerCertificate=True;"
+                    "Server=localhost;Database=Micro_GigsDB;Trusted_Connection=True;TrustServerCertificate=True;",
+                    b => b.MigrationsAssembly("Micro_Gigs")
+
                 );
             }
         }

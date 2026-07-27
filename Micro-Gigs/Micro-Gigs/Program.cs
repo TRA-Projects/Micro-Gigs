@@ -99,7 +99,7 @@ namespace Micro_Gigs
                     Scheme = "bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Enter your JWT token in the box belo"
+                    Description = "Enter your JWT token in the box below"
                 });
 
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement

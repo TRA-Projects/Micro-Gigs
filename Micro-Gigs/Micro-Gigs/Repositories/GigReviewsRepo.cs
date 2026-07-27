@@ -34,7 +34,7 @@ namespace Micro_Gigs.Repositories.Implementations
             // ToListAsync()
             // تحويل النتائج إلى List بشكل غير متزامن
             return await _context.Reviews
-                .Include(r => r.AssId)
+                .Include(r => r.GigAssignment)
                 .Include(r => r.Client)
                 .ToListAsync();
         }
@@ -57,7 +57,7 @@ namespace Micro_Gigs.Repositories.Implementations
             // يرجع أول عنصر مطابق
             // أو null إذا لم يتم العثور عليه
             return await _context.Reviews
-                .Include(r => r.AssId)
+                .Include(r => r.GigAssignment)
                 .Include(r => r.Client)
                 .FirstOrDefaultAsync(r => r.ReviewId == reviewId);
         }

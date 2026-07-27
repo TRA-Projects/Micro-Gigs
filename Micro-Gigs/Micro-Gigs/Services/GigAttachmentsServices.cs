@@ -1,5 +1,6 @@
-﻿using Micro_Gigs.Models;                           // للوصول إلى Model: GigAttachments
-using Micro_Gigs.DTOs;                             // للوصول إلى DTO: GigAttachmentsInputDTO
+﻿using Micro_Gigs.DTOs;                             // للوصول إلى DTO: GigAttachmentsInputDTO
+using Micro_Gigs.Models;                           // للوصول إلى Model: GigAttachments
+using Micro_Gigs.Repositories;
 using Micro_Gigs.Repositories.Implementations;     // للوصول إلى Class: GigAttachmentsRepo
 
 namespace Micro_Gigs.Services

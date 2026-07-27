@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Micro_Gigs.Models;
 
-namespace Micro_Gigs.Repositories.Implementations
+namespace Micro_Gigs.Repositories
 {
     public class GigAttachmentsRepo
     {

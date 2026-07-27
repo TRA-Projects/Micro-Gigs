@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;        // يحتوي على ControllerBase و HttpPost و HttpGet و HttpPut و HttpDelete
-using Microsoft.AspNetCore.Authorization; // لاستخدام أتربيوت [Authorize]
-using System.Security.Claims;          // لاستخراج البيانات من الـ JWT Claims
-using Micro_Gigs.Services;            // للوصول إلى Service: GigAttachmentsServices
-using Micro_Gigs.DTOs;                // للوصول إلى DTOs: GigAttachmentsInputDTO, GigAttachmentsOutputDTO
-
+﻿using Microsoft.AspNetCore.Mvc;       
+using Microsoft.AspNetCore.Authorization; 
+using System.Security.Claims;         
+using Micro_Gigs.Services;            
+using Micro_Gigs.DTOs;                
 namespace Micro_Gigs.Controllers
 {
     // =========================================================
@@ -35,38 +34,78 @@ namespace Micro_Gigs.Controllers
 
 
         // =========================================================
-        // CREATE ATTACHMENT
-        // POST: api/GigAttachments
-        // إنشاء Attachment جديد
+        // UPLOAD FILE & CREATE ATTACHMENT
+        // POST: api/GigAttachments/upload
+        // رفع ملف إلى السيرفر وإنشاء Attachment جديد تلقائياً
         // =========================================================
-        [HttpPost]
-        public async Task<IActionResult> CreateAttachment([FromBody] GigAttachmentsInputDTO input)
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadFile([FromForm] IFormFile file, [FromForm] int gigId)
         {
             // =====================================================
-            // USER ID FROM TOKEN
+            // 1. VALIDATION
+            // التحقق من وجود الملف المرفوع وحجمه
+            // =====================================================
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { message = "No file uploaded." });
+            }
+
+
+            // =====================================================
+            // 2. USER ID FROM TOKEN
             // استخراج رقم المستخدم تلقائياً من الـ JWT Token
             // =====================================================
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
                            ?? User.FindFirst("sub")?.Value
                            ?? User.FindFirst("id")?.Value;
 
-            // التحقق من وجود القيمة وإمكانية تحويلها إلى رقم صحفي (int)
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             {
-                return Unauthorized(new { message = "Unable to retrieve user ID from token. Please write to me.." });
+                return Unauthorized(new { message = "Unable to retrieve user ID from token." });
             }
 
+
             // =====================================================
-            // CALL SERVICE
-            // استدعاء Service لإنشاء Attachment جديد مع تمرير userId المستخرج
+            // 3. CREATE DIRECTORY
+            // إنشاء مجلد الحفظ في حال عدم وجوده
             // =====================================================
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+
+            // =====================================================
+            // 4. SAVE FILE TO DISK
+            // إنشاء اسم فريد للملف وتخزينه على السيرفر
+            // =====================================================
+            var fileName = $"{Guid.NewGuid()}_{file.FileName}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+
+            // =====================================================
+            // 5. CALL SERVICE
+            // تجهيز مسار الملف وإنشاء Attachment جديد عبر الـ Service
+            // =====================================================
+            var fileUrl = $"/uploads/{fileName}";
+            var input = new GigAttachmentsInputDTO
+            {
+                GigId = gigId,
+                FileUrl = fileUrl
+            };
+
             var attachment = await _service.CreateAttachment(input, userId);
 
 
             // =====================================================
-            // RETURN RESULT
-            // إرجاع البيانات التي تمت إضافتها
-            // HTTP 200 OK
+            // 6. RETURN RESULT
+            // إرجاع البيانات التي تمت إضافتها (HTTP 200 OK)
             // =====================================================
             return Ok(attachment);
         }

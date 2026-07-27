@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;        // يحتوي على ControllerBase و HttpPost و HttpGet و HttpPut و HttpDelete
-using Microsoft.AspNetCore.Authorization; // لاستخدام أتربيوت [Authorize]
-using System.Security.Claims;          // لاستخراج البيانات من الـ JWT Claims
-using Micro_Gigs.Services;            // للوصول إلى Service: GigAttachmentsServices
-using Micro_Gigs.DTOs;                // للوصول إلى DTOs: GigAttachmentsInputDTO, GigAttachmentsOutputDTO
-
+﻿using Microsoft.AspNetCore.Mvc;        
+using Microsoft.AspNetCore.Authorization; 
+using System.Security.Claims;         
+using Micro_Gigs.Services;            
+using Micro_Gigs.DTOs;             
 namespace Micro_Gigs.Controllers
 {
     // =========================================================

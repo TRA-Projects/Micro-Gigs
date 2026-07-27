@@ -33,9 +33,9 @@ namespace Micro_Gigs.Models
 
         // 1. Assignment Relationship (تم التعديل إلى AssId ليطابق ERD)
         [Required]
-        public int AssId { get; set; }
+        public int AssignmentId { get; set; }
 
-        [ForeignKey(nameof(AssId))]
+        [ForeignKey(nameof(AssignmentId))]
         public virtual GigAssignments GigAssignment { get; set; } = null;
 
         // 2. Client/User Relationship (تم التعديل إلى ClientId ليطابق ERD)

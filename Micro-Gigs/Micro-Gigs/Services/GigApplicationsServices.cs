@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Micro_Gigs.DTOs;
@@ -10,10 +11,16 @@ namespace Micro_Gigs.Services
     public class GigApplicationsServices
     {
         private readonly GigApplicationsRepo _repo;
+        private readonly GigsRepo _gigsRepo;
+        private readonly UsersRepo _usersRepo;
+        private readonly EmailService _emailService;
 
-        public GigApplicationsServices(GigApplicationsRepo repo)
+        public GigApplicationsServices(GigApplicationsRepo repo, GigsRepo gigsRepo, UsersRepo usersRepo, EmailService emailService)
         {
             _repo = repo;
+            _gigsRepo = gigsRepo;
+            _usersRepo = usersRepo;
+            _emailService = emailService;
         }
 
         // جلب جميع الطلبات مع استبعاد المحذوفة منطقياً يدوياً
@@ -71,7 +78,7 @@ namespace Micro_Gigs.Services
             };
         }
 
-        public int CreateApplication(CreateGigApplicationDto dto)
+        public async Task<int> CreateApplication(CreateGigApplicationDto dto)
         {
             var application = new GigApplications
             {
@@ -85,6 +92,36 @@ namespace Micro_Gigs.Services
             };
 
             _repo.Add(application);
+
+            // After creating application, notify the gig's client by email with freelancer and gig details.
+            try
+            {
+                var gig = _gigsRepo.GetById(dto.GigId);
+                var freelancer = _usersRepo.GetById(dto.FreelancerId);
+
+                if (gig != null && gig.Client != null && freelancer != null)
+                {
+                    var clientEmail = gig.Client.Email;
+                    var subject = $"New application for your gig: {gig.Title}";
+                    var body = $@"Hello {gig.Client.UserName},<br/><br/>
+A new freelancer has applied to your gig '<b>{gig.Title}</b>'.<br/><br/>
+Freelancer details:<br/>
+Name: {freelancer.UserName}<br/>
+Email: {freelancer.Email}<br/>
+Proposal: {application.ProposalText}<br/>
+Proposed Price: {application.ProposedPrice:C}<br/>
+Application Date: {application.ApplicationDate}<br/><br/>
+You can review the application in your dashboard.<br/><br/>
+Regards,<br/>Micro-Gigs Team";
+
+                    // send email (best-effort)
+                    await _emailService.SendEmailAsync(clientEmail, subject, body);
+                }
+            }
+            catch
+            {
+                // swallow exceptions from email sending to not block application creation
+            }
             return application.ApplicationId;
         }
 

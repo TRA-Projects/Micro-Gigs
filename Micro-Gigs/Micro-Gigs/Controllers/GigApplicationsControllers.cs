@@ -37,14 +37,14 @@ namespace Micro_Gigs.Controllers
 
         // POST: api/GigApplications
         [HttpPost]
-        public ActionResult<int> CreateApplication([FromBody] CreateGigApplicationDto dto)
+        public async Task<ActionResult<int>> CreateApplication([FromBody] CreateGigApplicationDto dto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            int newId = _applicationsService.CreateApplication(dto);
+            int newId = await _applicationsService.CreateApplication(dto);
             return CreatedAtAction(nameof(GetApplicationById), new { id = newId }, new { id = newId, message = "Application created successfully." });
         }
 

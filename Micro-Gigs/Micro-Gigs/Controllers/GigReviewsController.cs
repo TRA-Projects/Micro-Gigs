@@ -69,5 +69,70 @@ namespace Micro_Gigs.Controllers
 
             return Ok(review);
         }
+
+        // =========================================================
+        // GET ALL REVIEWS
+        // GET: api/GigReviews
+        // =========================================================
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var reviews = await _service.GetAllReviews();
+            return Ok(reviews);
+        }
+
+        // =========================================================
+        // GET BY ID
+        // GET: api/GigReviews/{id}
+        // =========================================================
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var review = await _service.GetById(id);
+            if (review == null) return NotFound();
+            return Ok(review);
+        }
+
+        // =========================================================
+        // UPDATE
+        // PUT: api/GigReviews/{id}
+        // =========================================================
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] GigReviewsInputDTO input)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                           ?? User.FindFirst("sub")?.Value
+                           ?? User.FindFirst("id")?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int reviewerId))
+            {
+                return Unauthorized(new { message = "Unable to retrieve user ID from token." });
+            }
+
+            var updated = await _service.UpdateReview(id, input, reviewerId);
+            if (updated == null) return Forbid();
+            return Ok(updated);
+        }
+
+        // =========================================================
+        // DELETE
+        // DELETE: api/GigReviews/{id}
+        // =========================================================
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                           ?? User.FindFirst("sub")?.Value
+                           ?? User.FindFirst("id")?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int reviewerId))
+            {
+                return Unauthorized(new { message = "Unable to retrieve user ID from token." });
+            }
+
+            var deleted = await _service.DeleteReview(id, reviewerId);
+            if (!deleted) return Forbid();
+            return Ok(new { success = true });
+        }
     }
 }

@@ -1,6 +1,6 @@
-﻿using Micro_Gigs.Models;                           // للوصول إلى Model: GigReviews
-using Micro_Gigs.DTOs;                             // للوصول إلى DTOs الخاصة بالـ Reviews
-using Micro_Gigs.Repositories.Implementations;     // للوصول إلى Class: GigReviewsRepo المباشر
+﻿using Micro_Gigs.Models;                           
+using Micro_Gigs.DTOs;                             
+using Micro_Gigs.Repositories.Implementations;    
 
 namespace Micro_Gigs.Services
 {
@@ -36,7 +36,7 @@ namespace Micro_Gigs.Services
         // إنشاء تقييم جديد
         // =========================================================
 
-        public async Task<GigReviews> CreateReview(
+        public async Task<GigReviewsOutputDTO> CreateReview(
             GigReviewsInputDTO input,
             int reviewerId)
         {
@@ -52,7 +52,7 @@ namespace Micro_Gigs.Services
                 // أخذ رقم الـ Assignment من الـ DTO وربط التقييم بالتكليف
                 // =================================================
 
-                AssId = input.AssignmentId,
+                AssignmentId = input.AssignmentId,
 
 
                 // =================================================
@@ -84,7 +84,109 @@ namespace Micro_Gigs.Services
             // إرسال الـ Review إلى Repository لإضافته وحفظه في قاعدة البيانات
             // =====================================================
 
-            return await _repository.AddAsync(review);
+            var created = await _repository.AddAsync(review);
+
+            return new GigReviewsOutputDTO
+            {
+                ReviewId = created.ReviewId,
+                AssignmentId = created.AssignmentId,
+                ReviewerId = created.ClientId,
+                Rating = created.Rating,
+                Comment = created.Comment
+            };
+        }
+
+        // =========================================================
+        // READ - ALL / BY ID / BY ASSIGNMENT / BY REVIEWER
+        // =========================================================
+        public async Task<IEnumerable<GigReviewsOutputDTO>> GetAllReviews()
+        {
+            var list = await _repository.GetAllAsync();
+            return list.Select(r => new GigReviewsOutputDTO
+            {
+                ReviewId = r.ReviewId,
+                AssignmentId = r.AssignmentId,
+                ReviewerId = r.ClientId,
+                Rating = r.Rating,
+                Comment = r.Comment
+            });
+        }
+
+        public async Task<GigReviewsOutputDTO?> GetById(int reviewId)
+        {
+            var r = await _repository.GetByIdAsync(reviewId);
+            if (r == null) return null;
+            return new GigReviewsOutputDTO
+            {
+                ReviewId = r.ReviewId,
+                AssignmentId = r.AssignmentId,
+                ReviewerId = r.ClientId,
+                Rating = r.Rating,
+                Comment = r.Comment
+            };
+        }
+
+        public async Task<IEnumerable<GigReviewsOutputDTO>> GetByAssignmentId(int assignmentId)
+        {
+            var list = await _repository.GetByAssignmentIdAsync(assignmentId);
+            return list.Select(r => new GigReviewsOutputDTO
+            {
+                ReviewId = r.ReviewId,
+                AssignmentId = r.AssignmentId,
+                ReviewerId = r.ClientId,
+                Rating = r.Rating,
+                Comment = r.Comment
+            });
+        }
+
+        public async Task<IEnumerable<GigReviewsOutputDTO>> GetByReviewerId(int reviewerId)
+        {
+            var list = await _repository.GetByReviewerIdAsync(reviewerId);
+            return list.Select(r => new GigReviewsOutputDTO
+            {
+                ReviewId = r.ReviewId,
+                AssignmentId = r.AssignmentId,
+                ReviewerId = r.ClientId,
+                Rating = r.Rating,
+                Comment = r.Comment
+            });
+        }
+
+        // =========================================================
+        // UPDATE REVIEW
+        // Only the original reviewer (ClientId) can update their review
+        // =========================================================
+        public async Task<GigReviewsOutputDTO?> UpdateReview(int reviewId, GigReviewsInputDTO input, int reviewerId)
+        {
+            var review = await _repository.GetByIdAsync(reviewId);
+            if (review == null) return null;
+            if (review.ClientId != reviewerId) return null; // not owner
+
+            review.Rating = input.Rating;
+            review.Comment = input.Comment;
+
+            var updated = await _repository.UpdateAsync(review);
+            return new GigReviewsOutputDTO
+            {
+                ReviewId = updated.ReviewId,
+                AssignmentId = updated.AssignmentId,
+                ReviewerId = updated.ClientId,
+                Rating = updated.Rating,
+                Comment = updated.Comment
+            };
+        }
+
+        // =========================================================
+        // DELETE REVIEW
+        // Only the original reviewer can delete
+        // =========================================================
+        public async Task<bool> DeleteReview(int reviewId, int reviewerId)
+        {
+            var review = await _repository.GetByIdAsync(reviewId);
+            if (review == null) return false;
+            if (review.ClientId != reviewerId) return false;
+
+            return await _repository.DeleteAsync(reviewId);
         }
     }
 }

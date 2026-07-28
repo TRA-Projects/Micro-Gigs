@@ -142,6 +142,15 @@ namespace Micro_Gigs
 
                 app.UseSwaggerUI();
             }
+            // Serve static files (for uploaded attachments)
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
+            // Ensure uploads folder exists in wwwroot
+            var env = app.Services.GetRequiredService<IWebHostEnvironment>();
+            var uploadsPath = Path.Combine(env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads");
+            if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
+
 
             app.UseHttpsRedirection();
 

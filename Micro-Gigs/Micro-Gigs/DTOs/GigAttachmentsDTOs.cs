@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace Micro_Gigs.DTOs
 {
@@ -26,10 +27,10 @@ namespace Micro_Gigs.DTOs
         // Path or URL of the uploaded file
         // =====================================================
 
-        [Required(ErrorMessage = "File URL is required.")]
+        [Required(ErrorMessage = "File URL is required when using JSON upload.")]
         [Url(ErrorMessage = "Invalid URL format. Must start with http or https.")]
         [StringLength(500, ErrorMessage = "File URL cannot exceed 500 characters.")]
-        public string FileUrl { get; set; }
+        public string? FileUrl { get; set; }
     }
 
 
@@ -62,7 +63,10 @@ namespace Micro_Gigs.DTOs
         // Path or URL of the attachment
         // =====================================================
 
-        public string FileUrl { get; set; }
+        public string FileUrl { get; set; } = string.Empty;
+
+        // Original file name if available
+        public string? FileName { get; set; }
 
 
         // =====================================================
@@ -72,5 +76,18 @@ namespace Micro_Gigs.DTOs
         // =====================================================
 
         public int UploadedBy { get; set; }
+    }
+
+    // =========================================================
+    // UPLOAD DTO (multipart/form-data)
+    // Used when sending a file via form upload
+    // =========================================================
+    public class GigAttachmentUploadDTO
+    {
+        [Required]
+        public int GigId { get; set; }
+
+        [Required]
+        public IFormFile File { get; set; } = null!;
     }
 }

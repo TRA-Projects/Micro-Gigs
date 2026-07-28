@@ -39,6 +39,7 @@ namespace Micro_Gigs
             builder.Services.AddScoped<GigReviewsServices>();
             builder.Services.AddScoped<GigsServices>();
             builder.Services.AddScoped<UsersServices>();
+            builder.Services.AddScoped<EmailService>();
 
             // 4. Controllers
             builder.Services.AddControllers();

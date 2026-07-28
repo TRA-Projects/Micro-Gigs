@@ -11,12 +11,14 @@ namespace Micro_Gigs.Controllers
     public class UsersController : ControllerBase
     {
         private UsersServices usersService;
+        private EmailService emailService;
 
 
         // Dependency Injection
-        public UsersController(UsersServices _usersService)
+        public UsersController(UsersServices _usersService, EmailService _emailService)
         {
             usersService = _usersService;
+            emailService = _emailService;
         }
 
 
@@ -139,6 +141,23 @@ namespace Micro_Gigs.Controllers
 
 
             return NoContent();
+        }
+
+
+        // Send email to a user
+        [HttpPost("SendEmail")]
+        [Authorize(Roles = "Client,Freelancer")]
+        public async Task<IActionResult> SendEmail([FromBody] UsersInputDTOs.SendEmailDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            bool sent = await emailService.SendEmailAsync(dto.ToEmail, dto.Subject, dto.Body);
+
+            if (!sent)
+                return StatusCode(500, new { message = "Failed to send email." });
+
+            return Ok(new { message = "Email sent successfully." });
         }
 
         

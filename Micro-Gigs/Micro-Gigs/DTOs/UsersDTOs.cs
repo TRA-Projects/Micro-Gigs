@@ -38,6 +38,24 @@ namespace Micro_Gigs.DTOs
         }
 
 
+        // DTO used to send an email to a user
+        public class SendEmailDto
+        {
+            // Recipient email address
+            [Required(ErrorMessage = "Recipient email is required.")]
+            [EmailAddress(ErrorMessage = "Invalid email format.")]
+            public string ToEmail { get; set; } = string.Empty;
+
+            // Email subject
+            [Required(ErrorMessage = "Subject is required.")]
+            public string Subject { get; set; } = string.Empty;
+
+            // Email body/content
+            [Required(ErrorMessage = "Body is required.")]
+            public string Body { get; set; } = string.Empty;
+        }
+
+
 
 
         // DTO used for user authentication (Login)

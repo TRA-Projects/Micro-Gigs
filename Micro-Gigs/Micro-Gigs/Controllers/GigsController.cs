@@ -3,7 +3,6 @@ using Micro_Gigs.Repositories;
 using Micro_Gigs.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel;
 using System.Security.Claims;
 
 namespace Micro_Gigs.Controllers
@@ -12,10 +11,10 @@ namespace Micro_Gigs.Controllers
     [Route("api/[controller]")]
     public class GigsController : ControllerBase
     {
-        private GigsServices gigsServices;
-        private GigsRepo gigsRepo;
+        private readonly GigsServices gigsServices;
+        private readonly GigsRepo gigsRepo;
 
-        public GigsController(GigsServices _gigsServices, GigsRepo _gigsRepo) 
+        public GigsController(GigsServices _gigsServices, GigsRepo _gigsRepo)
         {
             gigsServices = _gigsServices;
             gigsRepo = _gigsRepo;
@@ -35,14 +34,13 @@ namespace Micro_Gigs.Controllers
             return Ok(gigs);
         }
 
-        [HttpGet("GetById")]
-        public IActionResult GetById([FromQuery] int id)
+        [HttpGet("GetById/{id:int}")]
+        public IActionResult GetById([FromRoute] int id)
         {
             var gig = gigsServices.GetGigById(id);
-            if (gig == null) return NotFound();
+            if (gig == null) return NotFound(new { message = $"Gig with ID {id} was not found." });
             return Ok(gig);
         }
-
 
         [HttpGet("GetByClient")]
         public IActionResult GetByClient([FromQuery] int id)
@@ -58,7 +56,7 @@ namespace Micro_Gigs.Controllers
             int clientId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
             var gig = gigsServices.CreateGig(dto, clientId);
-            if (gig == null) return BadRequest(new { message = "Only client can create gigs" });
+            if (gig == null) return BadRequest(new { message = "Only clients can create gigs." });
 
             return CreatedAtAction(nameof(GetById), new { id = gig.GigId }, gig);
         }
@@ -69,20 +67,17 @@ namespace Micro_Gigs.Controllers
         {
             int clientId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-            var gig = gigsServices.GetGigById(id);
-            if (gig == null) return NotFound();
+            var fullGig = gigsRepo.GetById(id);
+            if (fullGig == null) return NotFound(new { message = $"Gig with ID {id} was not found." });
 
-            //  التحقق من الملكية
-            var fullGig = gigsRepo.GetById(id); // use instance
-            if (fullGig == null || fullGig.ClientId != clientId)
-                return Forbid();  // 403
+            if (fullGig.ClientId != clientId)
+                return Forbid();
 
             var success = gigsServices.UpdateGig(id, dto, clientId);
             if (!success) return NotFound();
 
             return NoContent();
         }
-
 
         [HttpDelete("Delete")]
         [Authorize(Roles = "Client")]
@@ -91,19 +86,15 @@ namespace Micro_Gigs.Controllers
             int clientId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
             var fullGig = gigsRepo.GetById(id);
-            if (fullGig == null) return NotFound();
+            if (fullGig == null) return NotFound(new { message = $"Gig with ID {id} was not found." });
 
-            //  التحقق من الملكية
             if (fullGig.ClientId != clientId)
                 return Forbid();
-
 
             var success = gigsServices.DeleteGig(id);
             if (!success) return NotFound();
 
             return NoContent();
         }
-
-
     }
 }

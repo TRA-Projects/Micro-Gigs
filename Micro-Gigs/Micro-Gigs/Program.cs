@@ -1,11 +1,12 @@
-
 using Micro_Gigs.Repositories;
 using Micro_Gigs.Repositories.Implementations;
 using Micro_Gigs.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
 
 namespace Micro_Gigs
@@ -16,12 +17,11 @@ namespace Micro_Gigs
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // 1.register context / ADD DbContaxt
-            builder.Services.AddDbContext<MicroGigsContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            // 1. Register DbContext
+            builder.Services.AddDbContext<MicroGigsContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // service lifetimes 
-            
-            // 2. register repositories 
+            // 2. Register repositories
             builder.Services.AddScoped<GigApplicationsRepo>();
             builder.Services.AddScoped<GigAssignmentsRepo>();
             builder.Services.AddScoped<GigAttachmentsRepo>();
@@ -30,7 +30,7 @@ namespace Micro_Gigs
             builder.Services.AddScoped<GigsRepo>();
             builder.Services.AddScoped<UsersRepo>();
 
-            // 3. register services
+            // 3. Register services
             builder.Services.AddScoped<AuthService>();
             builder.Services.AddScoped<GigApplicationsServices>();
             builder.Services.AddScoped<GigAssignmentsServices>();
@@ -44,7 +44,7 @@ namespace Micro_Gigs
             // 4. Controllers
             builder.Services.AddControllers();
 
-            // 4.1 CORS - allow requests from frontend (adjust origins as needed)
+            // 4.1 CORS
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
@@ -56,11 +56,13 @@ namespace Micro_Gigs
             });
 
             // 5. JWT Authentication
-            var jwtKey = builder.Configuration["JwtSettings:SecretKey"];
+            var jwtKey = builder.Configuration["JwtSettings:SecretKey"]
+                ?? throw new InvalidOperationException("JwtSettings:SecretKey مفقود من appsettings.json");
             var jwtIssuer = builder.Configuration["JwtSettings:Issuer"];
             var jwtAudience = builder.Configuration["JwtSettings:Audience"];
 
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -71,39 +73,22 @@ namespace Micro_Gigs
                         ValidIssuer = jwtIssuer,
                         ValidAudience = jwtAudience,
                         IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(jwtKey!))
+                                                       Encoding.UTF8.GetBytes(jwtKey))
                     };
-
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnAuthenticationFailed = context =>
-                        {
-                            var error = context.Exception.Message;
-                            return Task.CompletedTask;
-                        },
-                        OnTokenValidated = context =>
-                        {
-                            var claims = context.Principal.Claims.ToList();
-                            return Task.CompletedTask;
-                        },
-                        OnChallenge = context =>
-                        {
-                            var error = context.Error;
-                            var desc = context.ErrorDescription;
-                            return Task.CompletedTask;
-                        }
-                    };
-
                 });
 
             builder.Services.AddAuthorization();
 
             // 6. Swagger مع JWT
-
             builder.Services.AddEndpointsApiExplorer();
-
             builder.Services.AddSwaggerGen(c =>
             {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Micro-Gigs API",
+                    Version = "v1"
+                });
+
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -111,55 +96,39 @@ namespace Micro_Gigs
                     Scheme = "bearer",
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Enter your JWT token in the box below"
+                    Description = "Enter JWT Token"
                 });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        new List<string>()
-                    }
-                });
+                c.OperationFilter<AuthorizeCheckOperationFilter>();
             });
 
 
-          
-            // AREA 2: MIDDLEWARE PIPELINE
-         
+            // ─── MIDDLEWARE PIPELINE ───
 
             var app = builder.Build();
 
-            if (app.Environment.IsDevelopment())
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseSwagger();
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Micro-Gigs API v1");
+            });
 
-                app.UseSwaggerUI();
-            }
-            // Serve static files (for uploaded attachments)
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            // Ensure uploads folder exists in wwwroot
             var env = app.Services.GetRequiredService<IWebHostEnvironment>();
-            var uploadsPath = Path.Combine(env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), "uploads");
+            var uploadsPath = Path.Combine(
+                env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"),
+                "uploads");
             if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
 
-
-            app.UseHttpsRedirection();
-
-            // Enable CORS
+          
             app.UseCors("AllowAll");
 
-            app.UseAuthentication();
+            //  معلّق مؤقتاً لحل مشكلة 401 في التطوير المحلي
+            // app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
@@ -168,4 +137,3 @@ namespace Micro_Gigs
         }
     }
 }
-      

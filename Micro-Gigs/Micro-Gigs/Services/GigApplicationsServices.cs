@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Linq;
-using Micro_Gigs.DTOs;
+﻿using Micro_Gigs.DTOs;
 using Micro_Gigs.Models;
 using Micro_Gigs.Repositories;
 
@@ -23,7 +19,6 @@ namespace Micro_Gigs.Services
             _emailService = emailService;
         }
 
-        // جلب جميع الطلبات مع استبعاد المحذوفة منطقياً يدوياً
         public IEnumerable<GigApplicationDto> GetAllApplications()
         {
             var apps = _repo.GetAll().Where(a => !a.IsDeleted);
@@ -31,7 +26,9 @@ namespace Micro_Gigs.Services
             {
                 ApplicationId = a.ApplicationId,
                 GigId = a.GigId,
+                GigTitle = a.Gig?.Title ?? string.Empty,        // Fixed issue #3
                 FreelancerId = a.FreelancerId,
+                FreelancerName = a.Freelancer?.UserName ?? string.Empty, // Fixed issue #3
                 ProposalText = a.ProposalText,
                 ProposedPrice = a.ProposedPrice,
                 ApplicationDate = a.ApplicationDate,
@@ -39,7 +36,6 @@ namespace Micro_Gigs.Services
             });
         }
 
-        // جلب طلب واحد مع التحقق أنه غير محذوف
         public GigApplicationDto? GetApplicationById(int id)
         {
             var a = _repo.GetById(id);
@@ -49,7 +45,9 @@ namespace Micro_Gigs.Services
             {
                 ApplicationId = a.ApplicationId,
                 GigId = a.GigId,
+                GigTitle = a.Gig?.Title ?? string.Empty,        // Fixed issue #3
                 FreelancerId = a.FreelancerId,
+                FreelancerName = a.Freelancer?.UserName ?? string.Empty, // Fixed issue #3
                 ProposalText = a.ProposalText,
                 ProposedPrice = a.ProposedPrice,
                 ApplicationDate = a.ApplicationDate,
@@ -57,7 +55,6 @@ namespace Micro_Gigs.Services
             };
         }
 
-        // جلب تفاصيل المشرف (لرؤية الطلبات حتى المحذوفة للمراجعة)
         public AdminGigApplicationDto? GetAdminApplicationById(int id)
         {
             var a = _repo.GetById(id);
@@ -67,7 +64,9 @@ namespace Micro_Gigs.Services
             {
                 ApplicationId = a.ApplicationId,
                 GigId = a.GigId,
+                GigTitle = a.Gig?.Title ?? string.Empty,
                 FreelancerId = a.FreelancerId,
+                FreelancerName = a.Freelancer?.UserName ?? string.Empty,
                 ProposalText = a.ProposalText,
                 ProposedPrice = a.ProposedPrice,
                 ApplicationDate = a.ApplicationDate,
@@ -78,51 +77,62 @@ namespace Micro_Gigs.Services
             };
         }
 
-        public async Task<int> CreateApplication(CreateGigApplicationDto dto)
+        // Retrieve the freelancer ID from the controller (JWT token), not from the DTO.
+        public async Task<(bool Success, string Error, int ApplicationId)> CreateApplication(CreateGigApplicationDto dto, int freelancerId)
         {
+            // Validate the gig before saving the application.
+            var gig = _gigsRepo.GetById(dto.GigId);
+            if (gig == null)
+                return (false, $"Gig with ID {dto.GigId} was not found.", 0);
+
+            // Ensure the gig is currently open for applications.
+            if (gig.Status != "Open")
+                return (false, "Applications cannot be submitted because this gig is not open.", 0);
+
+            var freelancer = _usersRepo.GetById(freelancerId);
+            if (freelancer == null)
+                return (false, $"User with ID {freelancerId} was not found.", 0);
+
+            // Prevent duplicate applications for the same gig.
+            bool alreadyApplied = _repo.GetAll()
+                .Any(a => a.GigId == dto.GigId && a.FreelancerId == freelancerId && !a.IsDeleted);
+            if (alreadyApplied)
+                return (false, "You have already applied for this gig.", 0);
+
             var application = new GigApplications
             {
                 GigId = dto.GigId,
-                FreelancerId = dto.FreelancerId,
+                FreelancerId = freelancerId,   // Retrieved from the JWT token instead of the DTO.
                 ProposalText = dto.ProposalText,
                 ProposedPrice = dto.ProposedPrice,
-                ApplicationDate = DateTime.Now,
+                ApplicationDate = DateTime.UtcNow,
                 Status = "Pending",
                 IsDeleted = false
             };
 
             _repo.Add(application);
 
-            // After creating application, notify the gig's client by email with freelancer and gig details.
+            // Send an email notification to the client (best effort).
             try
             {
-                var gig = _gigsRepo.GetById(dto.GigId);
-                var freelancer = _usersRepo.GetById(dto.FreelancerId);
-
-                if (gig != null && gig.Client != null && freelancer != null)
+                if (gig.Client != null)
                 {
-                    var clientEmail = gig.Client.Email;
                     var subject = $"New application for your gig: {gig.Title}";
                     var body = $@"Hello {gig.Client.UserName},<br/><br/>
-A new freelancer has applied to your gig '<b>{gig.Title}</b>'.<br/><br/>
-Freelancer details:<br/>
-Name: {freelancer.UserName}<br/>
-Email: {freelancer.Email}<br/>
+Freelancer <b>{freelancer.UserName}</b> applied to your gig '<b>{gig.Title}</b>'.<br/>
 Proposal: {application.ProposalText}<br/>
-Proposed Price: {application.ProposedPrice:C}<br/>
-Application Date: {application.ApplicationDate}<br/><br/>
-You can review the application in your dashboard.<br/><br/>
+Proposed Price: {application.ProposedPrice:C}<br/><br/>
 Regards,<br/>Micro-Gigs Team";
 
-                    // send email (best-effort)
-                    await _emailService.SendEmailAsync(clientEmail, subject, body);
+                    await _emailService.SendEmailAsync(gig.Client.Email, subject, body);
                 }
             }
             catch
             {
-                // swallow exceptions from email sending to not block application creation
+                // Do not interrupt the application process if sending the email fails.
             }
-            return application.ApplicationId;
+
+            return (true, string.Empty, application.ApplicationId);
         }
 
         public bool UpdateApplicationStatus(int id, string status)

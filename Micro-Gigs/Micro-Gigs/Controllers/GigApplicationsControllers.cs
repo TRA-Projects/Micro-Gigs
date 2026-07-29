@@ -1,82 +1,68 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Micro_Gigs.DTOs;
+﻿using Micro_Gigs.DTOs;
 using Micro_Gigs.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Micro_Gigs.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class GigApplicationsController : ControllerBase
     {
-        private readonly GigApplicationsServices _applicationsService;
+        private readonly GigApplicationsServices _service;
 
-        public GigApplicationsController(GigApplicationsServices applicationsService)
+        public GigApplicationsController(GigApplicationsServices service)
         {
-            _applicationsService = applicationsService;
+            _service = service;
         }
 
-        // GET: api/GigApplications
-        [HttpGet]
-        public ActionResult<IEnumerable<GigApplicationDto>> GetAllApplications()
+        [HttpGet("GetAll")]
+        [Authorize]
+        public IActionResult GetAll()
         {
-            var applications = _applicationsService.GetAllApplications();
-            return Ok(applications);
+            var apps = _service.GetAllApplications();
+            return Ok(apps);
         }
 
-        // GET: api/GigApplications/5
-        [HttpGet("{id}")]
-        public ActionResult<GigApplicationDto> GetApplicationById(int id)
+        [HttpGet("GetById/{id:int}")]
+        [Authorize]
+        public IActionResult GetById(int id)
         {
-            var application = _applicationsService.GetApplicationById(id);
-            if (application == null)
-            {
-                return NotFound(new { message = $"Application with ID {id} not found." });
-            }
-            return Ok(application);
+            var app = _service.GetApplicationById(id);
+            if (app == null) return NotFound(new { message = $"Application with ID {id} was not found." });
+            return Ok(app);
         }
 
-        // POST: api/GigApplications
-        [HttpPost]
-        public async Task<ActionResult<int>> CreateApplication([FromBody] CreateGigApplicationDto dto)
+        [HttpPost("Apply")]
+        [Authorize(Roles = "Freelancer")]
+        public async Task<IActionResult> Apply([FromBody] CreateGigApplicationDto dto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            // Get the freelancer ID from the JWT token instead of user input.
+            int freelancerId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-            int newId = await _applicationsService.CreateApplication(dto);
-            return CreatedAtAction(nameof(GetApplicationById), new { id = newId }, new { id = newId, message = "Application created successfully." });
+            var (success, error, appId) = await _service.CreateApplication(dto, freelancerId);
+
+            if (!success) return BadRequest(new { message = error });
+            return Ok(new { applicationId = appId });
         }
 
-        // PATCH: api/GigApplications/5/status
-        [HttpPatch("{id}/status")]
-        public IActionResult UpdateApplicationStatus(int id, [FromBody] string status)
+        [HttpPatch("UpdateStatus/{id:int}")]
+        [Authorize(Roles = "Client")]
+        public IActionResult UpdateStatus(int id, [FromBody] string status)
         {
-            if (string.IsNullOrWhiteSpace(status))
-            {
-                return BadRequest(new { message = "Status cannot be empty." });
-            }
-
-            bool updated = _applicationsService.UpdateApplicationStatus(id, status);
-            if (!updated)
-            {
-                return NotFound(new { message = $"Application with ID {id} not found." });
-            }
-
-            return Ok(new { message = "Application status updated successfully." });
+            var success = _service.UpdateApplicationStatus(id, status);
+            if (!success) return NotFound(new { message = $"Application with ID {id} was not found." });
+            return NoContent();
         }
 
-        // DELETE: api/GigApplications/5
-        [HttpDelete("{id}")]
-        public IActionResult DeleteApplication(int id)
+        [HttpDelete("Delete/{id:int}")]
+        [Authorize]
+        public IActionResult Delete(int id)
         {
-            bool deleted = _applicationsService.DeleteApplication(id);
-            if (!deleted)
-            {
-                return NotFound(new { message = $"Application with ID {id} not found." });
-            }
-
-            return Ok(new { message = "Application deleted successfully (Soft Delete)." });
+            var success = _service.DeleteApplication(id);
+            if (!success) return NotFound(new { message = $"Application with ID {id} was not found." });
+            return NoContent();
         }
     }
 }

@@ -175,7 +175,7 @@ namespace Micro_Gigs.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
 
-                    b.Property<int>("AssId")
+                    b.Property<int>("AssignmentId")
                         .HasColumnType("int");
 
                     b.Property<int>("ClientId")
@@ -192,7 +192,7 @@ namespace Micro_Gigs.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("AssId")
+                    b.HasIndex("AssignmentId")
                         .IsUnique();
 
                     b.HasIndex("ClientId");
@@ -343,7 +343,7 @@ namespace Micro_Gigs.Migrations
                 {
                     b.HasOne("Micro_Gigs.Models.GigAssignments", "GigAssignment")
                         .WithOne("Review")
-                        .HasForeignKey("Micro_Gigs.Models.GigReviews", "AssId")
+                        .HasForeignKey("Micro_Gigs.Models.GigReviews", "AssignmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
